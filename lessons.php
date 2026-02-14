@@ -274,6 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Click handlers for lesson items
+    let isLoadingLesson = false;
     document.querySelectorAll('.lesson-item').forEach(item => {
         item.addEventListener('click', function(e) {
             e.stopImmediatePropagation();
@@ -293,11 +294,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const lessonId = this.dataset.lessonId;
             const title = this.dataset.title;
             
+            // Skip if already loading this lesson
+            if (isLoadingLesson && currentLessonId === parseInt(lessonId)) {
+                return;
+            }
+            
             // Update active state
             document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('playing'));
             this.classList.add('playing');
             
-            loadLesson(lessonId, title);
+            isLoadingLesson = true;
+            loadLesson(lessonId, title).finally(() => {
+                isLoadingLesson = false;
+            });
         });
     });
     
@@ -309,7 +318,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+let currentLoadController = null; // AbortController for cancelling pending requests
+
 function loadLesson(lessonId, title) {
+    // Cancel any pending request
+    if (currentLoadController) {
+        currentLoadController.abort();
+    }
+    currentLoadController = new AbortController();
+    
     currentLessonId = parseInt(lessonId);
     
     // Update title with loading indicator
@@ -319,15 +336,16 @@ function loadLesson(lessonId, title) {
     audioPlayer.style.opacity = '0.5';
     audioPlayer.style.pointerEvents = 'none';
     
-    // Get audio token and load
-    fetch('api/get-audio-token.php', {
+    // Get audio token and load - return promise for chaining
+    return fetch('api/get-audio-token.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
             'X-CSRF-Token': csrfToken
         },
-        body: JSON.stringify({ lesson_id: parseInt(lessonId), csrf_token: csrfToken })
+        body: JSON.stringify({ lesson_id: parseInt(lessonId), csrf_token: csrfToken }),
+        signal: currentLoadController.signal
     })
     .then(response => response.json())
     .then(data => {
@@ -357,6 +375,10 @@ function loadLesson(lessonId, title) {
         }
     })
     .catch(error => {
+        // Ignore aborted requests (caused by rapid clicking)
+        if (error.name === 'AbortError') {
+            return;
+        }
         console.error('Error:', error);
         nowPlayingTitle.textContent = 'هەڵە';
         audioPlayer.style.opacity = '1';
