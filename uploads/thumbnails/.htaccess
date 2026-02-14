@@ -1,0 +1,4 @@
+# Allow access to thumbnail images
+# Users need to see course thumbnails
+
+Options -Indexes

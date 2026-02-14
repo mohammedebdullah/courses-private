@@ -1,0 +1,49 @@
+# Uploads folder - audio files and thumbnails (keep structure, ignore content)
+uploads/audio/*.mp3
+uploads/audio/*.wav
+uploads/audio/*.ogg
+uploads/audio/*.m4a
+uploads/thumbnails/*.jpg
+uploads/thumbnails/*.png
+uploads/thumbnails/*.gif
+
+# But keep the .htaccess and placeholder files
+!uploads/audio/.htaccess
+!uploads/audio/.gitkeep
+!uploads/thumbnails/.htaccess
+!uploads/thumbnails/.gitkeep
+
+# Database backups
+database/*.sql.gz
+database/*.sql.zip
+database/backups/
+
+# Environment-specific configs
+database/config.local.php
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# Node modules (if using npm for assets)
+node_modules/
+
+# PHP
+vendor/
+composer.lock

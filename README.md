@@ -250,7 +250,77 @@ The security measures are designed to:
 - Provide forensic tracking via watermarks
 - Detect and respond to suspicious behavior
 
-## 📝 License
+## � Deployment
+
+### GitHub Actions Deployment to Hostinger
+
+This project is configured for automatic deployment to Hostinger using GitHub Actions.
+
+#### Prerequisites
+1. GitHub repository with the code
+2. Hostinger FTP access credentials
+3. GitHub repository secrets configured
+
+#### Setup Steps
+
+1. **Configure GitHub Secrets**
+   - Go to your GitHub repository → Settings → Secrets and variables → Actions
+   - Add secret: `FTP_PASSWORD` (your Hostinger FTP password)
+
+2. **Verify Deployment Configuration**
+   - Check `.github/workflows/deploy.yml` for correct settings
+   - Subdomain: `private.bryarahmad.com` → `/public_html/private/`
+
+3. **Deploy**
+   ```bash
+   git add .
+   git commit -m "Deploy to production"
+   git push origin main
+   ```
+   - Deployment will start automatically
+   - Monitor progress in GitHub Actions tab
+
+#### Post-Deployment Steps
+
+After first deployment, you must fix audio file paths:
+
+1. **Access the migration script**
+   ```
+   https://private.bryarahmad.com/migrate_fix_audio_paths.php?authorize
+   ```
+
+2. **Review the current status** showing how many paths need fixing
+
+3. **Click "Run Migration Now"** to convert absolute paths to relative paths
+
+4. **Delete the migration file** after successful migration for security
+
+#### Database Configuration
+
+Make sure your `database/config.php` has correct production credentials:
+
+```php
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'u314367906_private');
+define('DB_USER', 'u314367906_private');
+define('DB_PASS', 'your_password');
+```
+
+#### Troubleshooting
+
+**Audio playback error (خەلەتی د لێدانا دەنگی دا):**
+- Cause: Audio file paths stored as absolute Windows paths
+- Solution: Run the migration script `migrate_fix_audio_paths.php`
+
+**Files not uploading:**
+- Check `uploads/audio/` directory exists and has write permissions (755)
+- Verify PHP upload limits in hosting control panel
+
+**Database connection errors:**
+- Verify database credentials in `database/config.php`
+- Check if database exists in cPanel
+
+## �📝 License
 
 This project is for educational purposes. Implement additional security measures as needed for production use.
 

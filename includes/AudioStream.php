@@ -161,6 +161,9 @@ class AudioStream {
         // Get duration
         $duration = self::getDuration($uploadPath);
         
+        // Store relative path instead of absolute path for cross-platform compatibility
+        $relativePath = 'uploads/audio/' . $storedFilename;
+        
         // Store in database
         $stmt = $db->prepare("
             INSERT INTO audio_files (lesson_id, original_filename, stored_filename, file_path, file_size, mime_type, duration)
@@ -171,7 +174,7 @@ class AudioStream {
             $lessonId,
             $file['name'],
             $storedFilename,
-            $uploadPath,
+            $relativePath,
             $file['size'],
             $file['type'],
             $duration
@@ -200,9 +203,16 @@ class AudioStream {
             return false;
         }
         
+        // Handle both absolute and relative paths
+        $filePath = $file['file_path'];
+        if (!preg_match('/^[a-zA-Z]:[\\\\\\/]/', $filePath) && $filePath[0] !== '/') {
+            // Relative path, prepend base directory
+            $filePath = APP_ROOT . '/' . $filePath;
+        }
+        
         // Delete physical file
-        if (file_exists($file['file_path'])) {
-            unlink($file['file_path']);
+        if (file_exists($filePath)) {
+            unlink($filePath);
         }
         
         // Delete database record
