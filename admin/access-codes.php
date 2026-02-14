@@ -277,14 +277,14 @@ include __DIR__ . '/includes/sidebar.php';
 																	<input type="hidden" name="action" value="reactivate">
 																	<input type="hidden" name="id" value="<?= $code['id'] ?>">
 																	<div class="modal-body">
-																		<p class="mb-3">تە دڤێت ڤی کۆدی چالاک بکەیەوە: <strong class="font-monospace"><?= htmlspecialchars($code['code']) ?></strong>?</p>
+																		<p class="mb-3">تە دڤێت ڤی کۆدی چالاک بکەیە ڤە: <strong class="font-monospace"><?= htmlspecialchars($code['code']) ?></strong>?</p>
 																		<p></p>
 																		<!-- <div class="alert alert-warning d-flex align-items-center mb-3" role="alert">
 																			<i class="ti ti-alert-triangle me-2 fs-5"></i>
 																			<p>ئەگەر بەکارهێنەرێک ئەم کۆدە بەکاردەهێنێت، ئەوان دەدەرکرێن و کۆد بۆ بەکارهێنەری نوێ ئامادە دەبێت.</p>
 																		</div>
 																		 -->
-																		<div class="mb-3">
+																		<!-- <div class="mb-3">
 																			<label class="form-label">درێژکردنەوەی ماوە</label>
 																			<select class="form-control form-select" name="extend_hours">
 																				<option value="0">بەکارهێنانی ماوەی سەرەتایی (<?= $code['duration_hours'] ?> کاتژمێر)</option>
@@ -294,11 +294,11 @@ include __DIR__ . '/includes/sidebar.php';
 																				<option value="2160">٩٠ ڕۆژ</option>
 																				<option value="8760">١ ساڵ</option>
 																			</select>
-																		</div>
+																		</div> -->
 																	</div>
 																	<div class="modal-footer">
 																		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لێڤەبوون</button>
-																		<button type="submit" class="btn btn-success"><i class="ti ti-refresh me-1"></i>چالاککردنەوە</button>
+																		<button type="submit" class="btn btn-success"><i class="ti ti-refresh me-1"></i>چالاک کرن</button>
 																	</div>
 																</form>
 															</div>
