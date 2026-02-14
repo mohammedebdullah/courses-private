@@ -269,7 +269,7 @@ include __DIR__ . '/includes/sidebar.php';
 														<div class="modal-dialog">
 															<div class="modal-content">
 																<div class="modal-header">
-																	<h5 class="modal-title">چالاککردنەوەی کۆد</h5>
+																	<h5 class="modal-title">چالاکرنا کودی دوبارە</h5>
 																	<!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
 																</div>
 																<form method="POST">
@@ -360,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const form = this.closest('.revoke-form');
             
             Swal.fire({
-                title: 'دڵنیایی؟',
+                title: 'پشتراستی',
                 text: 'تە دڤێت ڤی کۆدی هەلوەشینی؟ بەکارهێنەرێ وی دێ هێتە دەرخستن.',
                 icon: 'warning',
                 showCancelButton: true,
