@@ -335,7 +335,7 @@ function loadLesson(lessonId, title) {
     currentLessonId = parseInt(lessonId);
     
     // Update title with loading indicator
-    nowPlayingTitle.textContent = 'دەباربێت...';
+    nowPlayingTitle.textContent = '...';
     
     // Disable audio player during load
     audioPlayer.style.opacity = '0.5';
