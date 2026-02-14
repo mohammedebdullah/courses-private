@@ -4,7 +4,13 @@
  * DELETE THIS FILE AFTER RUNNING!
  */
 
-require_once 'database/config.php';
+// Only allow access from localhost or when specifically authorized
+$allowed_ips = ['127.0.0.1', '::1'];
+if (!in_array($_SERVER['REMOTE_ADDR'] ?? '', $allowed_ips) && !isset($_GET['authorize'])) {
+    die('Access denied. This script can only be run from localhost or with ?authorize parameter.');
+}
+
+require_once __DIR__ . '/includes/init.php';
 
 try {
     $db = getDB();
