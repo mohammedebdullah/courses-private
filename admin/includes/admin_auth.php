@@ -18,5 +18,8 @@ if (!$currentAdmin) {
     redirect('login.php');
 }
 
+// Keep admin session alive - update activity timestamp
+$_SESSION['last_activity'] = time();
+
 // Set security headers
 Security::setSecurityHeaders();

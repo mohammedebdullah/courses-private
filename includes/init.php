@@ -18,6 +18,11 @@ date_default_timezone_set('Asia/Baghdad');
 // Define app root
 define('APP_ROOT', dirname(__DIR__));
 
+// Load Composer autoloader for getID3 library
+if (file_exists(APP_ROOT . '/vendor/autoload.php')) {
+    require_once APP_ROOT . '/vendor/autoload.php';
+}
+
 // Load configuration
 require_once APP_ROOT . '/database/config.php';
 

@@ -10,17 +10,17 @@ if (!defined('APP_ROOT')) {
 }
 
 // Database credentials
-// define('DB_HOST', 'localhost');
-// define('DB_NAME', 'audio_course_db');
-// define('DB_USER', 'root');
-// define('DB_PASS', '');
-// define('DB_CHARSET', 'utf8mb4');
-
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'u314367906_private');
-define('DB_USER', 'u314367906_private');
-define('DB_PASS', 'Ai7579796@AaA');
+define('DB_NAME', 'audio_course_db');
+define('DB_USER', 'root');
+define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
+
+// define('DB_HOST', 'localhost');
+// define('DB_NAME', 'u314367906_private');
+// define('DB_USER', 'u314367906_private');
+// define('DB_PASS', 'Ai7579796@AaA');
+// define('DB_CHARSET', 'utf8mb4');
 
 // Security settings
 // IMPORTANT: Use a fixed key - DO NOT use random_bytes() here as it would change on every request!

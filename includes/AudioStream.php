@@ -102,19 +102,32 @@ class AudioStream {
      * Get audio file duration using getID3 or ffprobe
      */
     public static function getDuration($filePath) {
+        // Try using getID3 library first (most accurate)
+        if (class_exists('getID3')) {
+            try {
+                $getID3 = new getID3;
+                $fileInfo = $getID3->analyze($filePath);
+                if (isset($fileInfo['playtime_seconds']) && $fileInfo['playtime_seconds'] > 0) {
+                    return intval($fileInfo['playtime_seconds']);
+                }
+            } catch (Exception $e) {
+                // Continue to fallback methods
+            }
+        }
+        
         // Try using ffprobe if available
         $output = [];
         $cmd = 'ffprobe -i ' . escapeshellarg($filePath) . ' -show_entries format=duration -v quiet -of csv="p=0" 2>&1';
-        exec($cmd, $output);
+        exec($cmd, $output, $returnCode);
         
-        if (!empty($output[0]) && is_numeric($output[0])) {
+        if ($returnCode === 0 && !empty($output[0]) && is_numeric($output[0])) {
             return intval(floatval($output[0]));
         }
         
-        // Fallback: estimate based on file size and typical bitrate
+        // Fallback: estimate based on file size (assuming 128kbps MP3)
         $fileSize = filesize($filePath);
-        $estimatedBitrate = 128000; // 128 kbps
-        return intval(($fileSize * 8) / $estimatedBitrate);
+        $estimatedBitrate = 128; // 128 kbps
+        return intval($fileSize / ($estimatedBitrate * 1000 / 8));
     }
     
     /**

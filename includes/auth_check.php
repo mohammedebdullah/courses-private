@@ -22,6 +22,9 @@ if (!$currentUser || $currentUser['status'] !== 'active') {
     redirect('index.php?error=blocked');
 }
 
+// Keep user session alive - update activity timestamp
+$_SESSION['last_activity'] = time();
+
 // Set security headers for all protected pages
 Security::setSecurityHeaders();
 

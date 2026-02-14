@@ -263,47 +263,6 @@ include __DIR__ . '/includes/sidebar.php';
 													<button type="button" class="btn btn-sm btn-success" title="کاراکرن" data-bs-toggle="modal" data-bs-target="#reactivateModal<?= $code['id'] ?>">
 														<i class="ti ti-refresh"></i>
 													</button>
-													
-													<!-- Reactivate Modal -->
-													<div class="modal fade" id="reactivateModal<?= $code['id'] ?>" tabindex="-1" aria-hidden="true">
-														<div class="modal-dialog">
-															<div class="modal-content">
-																<div class="modal-header">
-																	<h5 class="modal-title">چالاکرنا کودی دوبارە</h5>
-																	<!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-																</div>
-																<form method="POST">
-																	<?= csrf_field() ?>
-																	<input type="hidden" name="action" value="reactivate">
-																	<input type="hidden" name="id" value="<?= $code['id'] ?>">
-																	<div class="modal-body">
-																		<p class="mb-3">تە دڤێت ڤی کۆدی چالاک بکەیە ڤە: <strong class="font-monospace"><?= htmlspecialchars($code['code']) ?></strong>?</p>
-																		<p></p>
-																		<!-- <div class="alert alert-warning d-flex align-items-center mb-3" role="alert">
-																			<i class="ti ti-alert-triangle me-2 fs-5"></i>
-																			<p>ئەگەر بەکارهێنەرێک ئەم کۆدە بەکاردەهێنێت، ئەوان دەدەرکرێن و کۆد بۆ بەکارهێنەری نوێ ئامادە دەبێت.</p>
-																		</div>
-																		 -->
-																		<!-- <div class="mb-3">
-																			<label class="form-label">درێژکردنەوەی ماوە</label>
-																			<select class="form-control form-select" name="extend_hours">
-																				<option value="0">بەکارهێنانی ماوەی سەرەتایی (<?= $code['duration_hours'] ?> کاتژمێر)</option>
-																				<option value="24">١ ڕۆژ</option>
-																				<option value="168">١ هەفتە</option>
-																				<option value="720">٣٠ ڕۆژ</option>
-																				<option value="2160">٩٠ ڕۆژ</option>
-																				<option value="8760">١ ساڵ</option>
-																			</select>
-																		</div> -->
-																	</div>
-																	<div class="modal-footer">
-																		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لێڤەبوون</button>
-																		<button type="submit" class="btn btn-success"><i class="ti ti-refresh me-1"></i>چالاک کرن</button>
-																	</div>
-																</form>
-															</div>
-														</div>
-													</div>
 													<?php endif; ?>
 												</td>
 											</tr>
@@ -316,6 +275,33 @@ include __DIR__ . '/includes/sidebar.php';
 						</div>
 					</div>
 				</div>
+
+<!-- Reactivate Modals (moved outside table for mobile compatibility) -->
+<?php foreach ($codes as $code): ?>
+	<?php if ($code['status'] === 'used' || $code['status'] === 'revoked' || $code['status'] === 'expired'): ?>
+	<div class="modal fade" id="reactivateModal<?= $code['id'] ?>" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">چالاکرنا کودی دوبارە</h5>
+				</div>
+				<form method="POST">
+					<?= csrf_field() ?>
+					<input type="hidden" name="action" value="reactivate">
+					<input type="hidden" name="id" value="<?= $code['id'] ?>">
+					<div class="modal-body">
+						<p class="mb-3">تە دڤێت ڤی کۆدی چالاک بکەیە ڤە: <strong class="font-monospace"><?= htmlspecialchars($code['code']) ?></strong>?</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لێڤەبوون</button>
+						<button type="submit" class="btn btn-success"><i class="ti ti-refresh me-1"></i>چالاک کرن</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<?php endif; ?>
+<?php endforeach; ?>
 
 <script>
 function copyAllCodes() {

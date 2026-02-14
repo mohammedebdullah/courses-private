@@ -16,7 +16,9 @@ class Session {
             ini_set('session.cookie_httponly', 1);
             ini_set('session.cookie_samesite', 'Strict');
             ini_set('session.gc_maxlifetime', SESSION_LIFETIME);
-            ini_set('session.cookie_lifetime', SESSION_LIFETIME); // Persist cookie across browser restarts
+            
+            // Keep session alive across browser restarts - only logout on manual logout or cookie clear
+            ini_set('session.cookie_lifetime', SESSION_LIFETIME); // Persist for 1 year
             
             // Use secure cookie if HTTPS
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
@@ -26,10 +28,11 @@ class Session {
             session_name('AUDIO_COURSE_SESS');
             session_start();
             
-            // Regenerate session ID periodically
+            // Regenerate session ID periodically for security (once per day)
             if (!isset($_SESSION['created'])) {
                 $_SESSION['created'] = time();
-            } elseif (time() - $_SESSION['created'] > 1800) {
+            } elseif (time() - $_SESSION['created'] > 86400) {
+                // Regenerate session ID once per day for security
                 session_regenerate_id(true);
                 $_SESSION['created'] = time();
             }
