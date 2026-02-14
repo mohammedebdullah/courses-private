@@ -102,6 +102,8 @@ class Session {
         $stmt->execute([$_SESSION['session_token'], $_SESSION['user_id']]);
         $session = $stmt->fetch();
         
+        if (!$session) {
+            self::destroySession();
             return false;
         }
         
