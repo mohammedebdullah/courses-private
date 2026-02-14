@@ -34,9 +34,10 @@ if (!$lessonId) {
 
 $db = getDB();
 
-// Get lesson and audio file
+// Get lesson and audio file (optimized - only select needed columns)
 $stmt = $db->prepare("
-    SELECT l.*, c.id as course_id, c.title as course_title,
+    SELECT l.id, l.title, l.start_datetime, l.end_datetime,
+           c.id as course_id, c.title as course_title,
            af.id as audio_id, af.file_path, af.stored_filename, af.mime_type, af.duration
     FROM lessons l
     JOIN courses c ON l.course_id = c.id
@@ -68,8 +69,7 @@ $token = Security::generateAudioToken(
     Session::getSessionId()
 );
 
-// Log access
-Security::logActivity('audio_token_generated', "Token generated for lesson: {$lesson['title']}", Session::getUserId());
+// Removed logging here for performance - too frequent for every lesson click
 
 json_response([
     'success' => true,

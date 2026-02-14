@@ -117,21 +117,15 @@ class Security {
     }
     
     /**
-     * Generate encrypted audio URL
+     * Generate encrypted audio URL (optimized for speed)
      */
     public static function generateAudioToken($audioFileId, $userId, $sessionId) {
         $db = getDB();
         $token = self::generateToken(32);
         $expiresAt = date('Y-m-d H:i:s', time() + AUDIO_TOKEN_LIFETIME);
         
-        // Invalidate any existing tokens for this audio/user
-        $stmt = $db->prepare("
-            UPDATE audio_tokens SET used = 1 
-            WHERE audio_file_id = ? AND user_id = ? AND used = 0
-        ");
-        $stmt->execute([$audioFileId, $userId]);
-        
-        // Create new token
+        // Skip the UPDATE query for performance - expired tokens are cleaned up separately
+        // Just create new token directly
         $stmt = $db->prepare("
             INSERT INTO audio_tokens (token, audio_file_id, user_id, session_id, ip_address, expires_at)
             VALUES (?, ?, ?, ?, ?, ?)

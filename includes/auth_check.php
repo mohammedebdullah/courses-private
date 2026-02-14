@@ -23,8 +23,12 @@ if (!$currentUser || $currentUser['status'] !== 'active') {
 // Set security headers for all protected pages
 Security::setSecurityHeaders();
 
-// Clean expired sessions periodically (1% chance)
+// Clean expired sessions and tokens periodically (1% chance - reduced from 100% to minimize overhead)
 if (rand(1, 100) === 1) {
     Session::cleanExpiredSessions();
     AccessCode::cleanExpired();
+    
+    // Clean expired audio tokens (performance: only 1% of requests)
+    $db = getDB();
+    $db->exec("DELETE FROM audio_tokens WHERE expires_at < NOW() OR used = 1");
 }

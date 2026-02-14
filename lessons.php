@@ -312,8 +312,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function loadLesson(lessonId, title) {
     currentLessonId = parseInt(lessonId);
     
-    // Update title
-    nowPlayingTitle.textContent = title;
+    // Update title with loading indicator
+    nowPlayingTitle.textContent = 'دەباربێت...';
+    
+    // Disable audio player during load
+    audioPlayer.style.opacity = '0.5';
+    audioPlayer.style.pointerEvents = 'none';
     
     // Get audio token and load
     fetch('api/get-audio-token.php', {
@@ -328,9 +332,17 @@ function loadLesson(lessonId, title) {
     .then(response => response.json())
     .then(data => {
         if (data.success && data.token) {
+            // Update title
+            nowPlayingTitle.textContent = title;
+            
             const streamUrl = 'stream.php?token=' + data.token;
             audioPlayer.src = streamUrl;
             audioPlayer.load();
+            
+            // Re-enable player
+            audioPlayer.style.opacity = '1';
+            audioPlayer.style.pointerEvents = 'auto';
+            
             audioPlayer.play().catch(e => console.log('Autoplay prevented'));
             
             // Scroll to player on mobile
@@ -338,11 +350,17 @@ function loadLesson(lessonId, title) {
                 document.getElementById('nowPlayingSection').scrollIntoView({ behavior: 'smooth' });
             }
         } else {
+            nowPlayingTitle.textContent = 'هەڵە';
+            audioPlayer.style.opacity = '1';
+            audioPlayer.style.pointerEvents = 'auto';
             showToast(data.message || 'هەڵەیەک ڕوویدا', 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
+        nowPlayingTitle.textContent = 'هەڵە';
+        audioPlayer.style.opacity = '1';
+        audioPlayer.style.pointerEvents = 'auto';
         showToast('هەڵەی پەیوەندی', 'error');
     });
 }
