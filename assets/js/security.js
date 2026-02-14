@@ -106,8 +106,8 @@
         console.log('%cThis is a browser feature intended for developers.', 'font-size: 18px;');
     }
     
-    // Check periodically
-    setInterval(detectDevTools, 1000);
+    // Check periodically - increased interval to reduce CPU usage
+    setInterval(detectDevTools, 3000); // Changed from 1000ms to 3000ms
     
     // Disable print
     window.addEventListener('beforeprint', function(e) {
@@ -196,7 +196,7 @@
         }
     });
     
-    // Detect debugger presence
+    // Detect debugger presence  
     (function detectDebugger() {
         const start = performance.now();
         debugger;
@@ -208,9 +208,9 @@
         }
     })();
     
-    // Clear console periodically
+    // Clear console periodically - increased interval to reduce impact
     setInterval(function() {
         console.clear();
-    }, 5000);
+    }, 10000); // Changed from 5000ms to 10000ms
     
 })();

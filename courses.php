@@ -7,17 +7,18 @@ require_once __DIR__ . '/includes/auth_check.php';
 
 $pageTitle = 'Courses-list';
 
-// Get all active courses
+// Get all active courses - optimized query with specific columns
 $db = getDB();
 $stmt = $db->prepare("
-    SELECT c.*, 
+    SELECT c.id, c.title, c.description, c.thumbnail, c.sort_order, c.created_at,
            COUNT(DISTINCT l.id) as lesson_count,
            COALESCE(SUM(af.duration), 0) as total_duration
     FROM courses c
+    FORCE INDEX (idx_courses_status)
     LEFT JOIN lessons l ON c.id = l.course_id AND l.status = 'active'
     LEFT JOIN audio_files af ON l.id = af.lesson_id
     WHERE c.status = 'active'
-    GROUP BY c.id
+    GROUP BY c.id, c.title, c.description, c.thumbnail, c.sort_order, c.created_at
     ORDER BY c.sort_order ASC, c.created_at DESC
 ");
 $stmt->execute();
