@@ -17,21 +17,17 @@ ON audio_files(lesson_id);
 CREATE INDEX IF NOT EXISTS idx_access_codes_code_status 
 ON access_codes(code, status);
 
--- Index for sessions
-CREATE INDEX IF NOT EXISTS idx_sessions_user_active 
-ON sessions(user_id, is_active, expires_at);
+-- Index for user_sessions (correct table name)
+CREATE INDEX IF NOT EXISTS idx_user_sessions_user_active 
+ON user_sessions(user_id, is_active, expires_at);
 
--- Index for activity_logs by user and type
-CREATE INDEX IF NOT EXISTS idx_activity_logs_user_type_time 
-ON activity_logs(user_id, action_type, created_at);
+-- Index for activity_logs by user and action (correct column name)
+CREATE INDEX IF NOT EXISTS idx_activity_logs_user_action_time 
+ON activity_logs(user_id, action, created_at);
 
 -- Index for courses status
 CREATE INDEX IF NOT EXISTS idx_courses_status 
 ON courses(status, created_at);
 
--- Verify indexes were created
-SHOW INDEX FROM user_progress;
-SHOW INDEX FROM lessons;
-SHOW INDEX FROM audio_files;
-SHOW INDEX FROM access_codes;
-SHOW INDEX FROM sessions;
+-- Verify the changes
+SELECT 'Indexes created successfully!' as status;

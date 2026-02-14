@@ -78,16 +78,16 @@ $db = getDB();
                     'sql' => 'CREATE INDEX idx_access_codes_code_status ON access_codes(code, status)'
                 ],
                 [
-                    'table' => 'sessions',
-                    'name' => 'idx_sessions_user_active',
+                    'table' => 'user_sessions',
+                    'name' => 'idx_user_sessions_user_active',
                     'columns' => 'user_id, is_active, expires_at',
-                    'sql' => 'CREATE INDEX idx_sessions_user_active ON sessions(user_id, is_active, expires_at)'
+                    'sql' => 'CREATE INDEX idx_user_sessions_user_active ON user_sessions(user_id, is_active, expires_at)'
                 ],
                 [
                     'table' => 'activity_logs',
-                    'name' => 'idx_activity_logs_user_type_time',
-                    'columns' => 'user_id, action_type, created_at',
-                    'sql' => 'CREATE INDEX idx_activity_logs_user_type_time ON activity_logs(user_id, action_type, created_at)'
+                    'name' => 'idx_activity_logs_user_action_time',
+                    'columns' => 'user_id, action, created_at',
+                    'sql' => 'CREATE INDEX idx_activity_logs_user_action_time ON activity_logs(user_id, action, created_at)'
                 ],
                 [
                     'table' => 'courses',
@@ -177,8 +177,8 @@ $db = getDB();
             ['lessons', 'idx_lessons_course_status', 'course_id, status, sort_order', 'Optimize lesson list queries'],
             ['audio_files', 'idx_audio_files_lesson', 'lesson_id', 'Faster audio file lookups'],
             ['access_codes', 'idx_access_codes_code_status', 'code, status', 'Quick authentication checks'],
-            ['sessions', 'idx_sessions_user_active', 'user_id, is_active, expires_at', 'Efficient session management'],
-            ['activity_logs', 'idx_activity_logs_user_type_time', 'user_id, action_type, created_at', 'Fast log queries'],
+            ['user_sessions', 'idx_user_sessions_user_active', 'user_id, is_active, expires_at', 'Efficient session management'],
+            ['activity_logs', 'idx_activity_logs_user_action_time', 'user_id, action, created_at', 'Fast log queries'],
             ['courses', 'idx_courses_status', 'status, created_at', 'Quick course listings']
         ];
         
