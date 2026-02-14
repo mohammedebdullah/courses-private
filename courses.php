@@ -14,7 +14,6 @@ $stmt = $db->prepare("
            COUNT(DISTINCT l.id) as lesson_count,
            COALESCE(SUM(af.duration), 0) as total_duration
     FROM courses c
-    FORCE INDEX (idx_courses_status)
     LEFT JOIN lessons l ON c.id = l.course_id AND l.status = 'active'
     LEFT JOIN audio_files af ON l.id = af.lesson_id
     WHERE c.status = 'active'

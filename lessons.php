@@ -25,16 +25,15 @@ if (!$course) {
 
 $pageTitle = 'Lessons-List';
 
-// Get lessons with audio files - optimized with proper indexes
+// Get lessons with audio files - optimized query (will use indexes automatically if they exist)
 $stmt = $db->prepare("
-    SELECT l.id, l.title, l.description, l.sort_order, l.start_date, l.end_date,
+    SELECT l.id, l.title, l.description, l.sort_order, l.start_datetime, l.end_datetime,
            af.id as audio_id,
            af.duration,
            af.file_size,
            COALESCE(up.progress_seconds, 0) as user_progress,
            COALESCE(up.completed, 0) as user_completed
     FROM lessons l
-    FORCE INDEX (idx_lessons_course_status)
     LEFT JOIN audio_files af ON l.id = af.lesson_id
     LEFT JOIN user_progress up ON l.id = up.lesson_id AND up.user_id = ?
     WHERE l.course_id = ? AND l.status = 'active'
@@ -50,7 +49,6 @@ $lessons = LessonSchedule::filterAvailableLessons($allLessons);
 $stmt = $db->prepare("
     SELECT c.id, c.title, COUNT(l.id) as lesson_count
     FROM courses c
-    FORCE INDEX (idx_courses_status)
     LEFT JOIN lessons l ON c.id = l.course_id AND l.status = 'active'
     WHERE c.status = 'active' AND c.id != ?
     GROUP BY c.id, c.title
