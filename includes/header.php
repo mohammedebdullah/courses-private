@@ -41,7 +41,6 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- Use admin FontAwesome -->
     <link rel="stylesheet" href="admin/assets/plugins/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
     <style>
         /* Anti-recording watermark */
         .watermark-overlay {

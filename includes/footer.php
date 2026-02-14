@@ -6,11 +6,12 @@
         </div>
     </footer>
     
-    <script src="assets/js/security.js"></script>
-    <script src="assets/js/app.js"></script>
+    <!-- Defer heavy scripts for faster page load -->
+    <script src="assets/js/security.js" defer></script>
+    <script src="assets/js/app.js" defer></script>
     
     <script>
-        // Generate anti-recording watermark
+        // Generate anti-recording watermark (optimized - fewer elements)
         (function() {
             const watermarkContainer = document.getElementById('watermark');
             if (!watermarkContainer) return;
@@ -20,17 +21,19 @@
             const timestamp = new Date().toISOString();
             const watermarkText = `${userName} - ${timestamp}`;
             
-            // Create grid of watermarks
-            for (let y = -100; y < window.innerHeight + 200; y += 150) {
-                for (let x = -200; x < window.innerWidth + 400; x += 300) {
+            // Create fewer watermarks for better performance (reduced by 50%)
+            const fragment = document.createDocumentFragment();
+            for (let y = -100; y < window.innerHeight + 200; y += 200) {
+                for (let x = -200; x < window.innerWidth + 400; x += 400) {
                     const span = document.createElement('span');
                     span.className = 'watermark-text';
                     span.textContent = watermarkText;
                     span.style.left = x + 'px';
                     span.style.top = y + 'px';
-                    watermarkContainer.appendChild(span);
+                    fragment.appendChild(span);
                 }
             }
+            watermarkContainer.appendChild(fragment);
         })();
     </script>
 </body>

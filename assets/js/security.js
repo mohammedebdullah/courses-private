@@ -107,7 +107,7 @@
     }
     
     // Check periodically - increased interval to reduce CPU usage
-    setInterval(detectDevTools, 3000); // Changed from 1000ms to 3000ms
+    setInterval(detectDevTools, 5000); // Changed from 3000ms to 5000ms for better performance
     
     // Disable print
     window.addEventListener('beforeprint', function(e) {
@@ -211,6 +211,6 @@
     // Clear console periodically - increased interval to reduce impact
     setInterval(function() {
         console.clear();
-    }, 10000); // Changed from 5000ms to 10000ms
+    }, 15000); // Changed from 10000ms to 15000ms for minimal performance impact
     
 })();

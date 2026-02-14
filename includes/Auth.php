@@ -141,7 +141,7 @@ class Auth {
     }
     
     /**
-     * Get current user
+     * Get current user (with session caching for performance)
      */
     public static function getUser() {
         $userId = Session::getUserId();
@@ -149,10 +149,26 @@ class Auth {
             return null;
         }
         
+        // Check if user data is cached in session (performance optimization)
+        if (isset($_SESSION['cached_user']) && 
+            isset($_SESSION['cached_user_time']) && 
+            (time() - $_SESSION['cached_user_time']) < 300) { // Cache for 5 minutes
+            return $_SESSION['cached_user'];
+        }
+        
+        // Fetch from database
         $db = getDB();
         $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$userId]);
-        return $stmt->fetch();
+        $user = $stmt->fetch();
+        
+        // Cache in session
+        if ($user) {
+            $_SESSION['cached_user'] = $user;
+            $_SESSION['cached_user_time'] = time();
+        }
+        
+        return $user;
     }
     
     /**
