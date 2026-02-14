@@ -3,7 +3,7 @@ name: 🚀 Deploy to Hostinger (Subdomain)
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 jobs:
