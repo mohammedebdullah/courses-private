@@ -75,11 +75,17 @@ class Session {
     }
     
     /**
-     * Validate user session
+     * Validate user session (with caching to avoid repeated DB queries)
      */
     public static function validateUserSession() {
         if (!isset($_SESSION['user_id']) || !isset($_SESSION['session_token'])) {
             return false;
+        }
+        
+        // Cache validation for 60 seconds to avoid DB query on every API call
+        $cacheKey = 'session_validated_at';
+        if (isset($_SESSION[$cacheKey]) && (time() - $_SESSION[$cacheKey]) < 60) {
+            return true; // Session was validated recently, trust it
         }
         
         $db = getDB();
@@ -96,8 +102,6 @@ class Session {
         $stmt->execute([$_SESSION['session_token'], $_SESSION['user_id']]);
         $session = $stmt->fetch();
         
-        if (!$session) {
-            self::destroySession();
             return false;
         }
         
@@ -107,8 +111,14 @@ class Session {
             return false;
         }
         
-        // Update last activity
-        self::updateActivity($session['id']);
+        // Update last activity (only every 60 seconds to reduce DB writes)
+        if (!isset($_SESSION['activity_updated_at']) || (time() - $_SESSION['activity_updated_at']) >= 60) {
+            self::updateActivity($session['id']);
+            $_SESSION['activity_updated_at'] = time();
+        }
+        
+        // Cache validation timestamp
+        $_SESSION[$cacheKey] = time();
         
         return $session;
     }
