@@ -7,6 +7,7 @@ const AudioCourse = {
     currentAudio: null,
     currentLesson: null,
     sessionToken: null,
+    lastSavedTime: 0, // Track last saved time to prevent duplicate saves
     
     init: function() {
         this.sessionToken = document.body.dataset.sessionToken || '';
@@ -172,8 +173,10 @@ const AudioCourse = {
             totalTimeEl.textContent = this.formatTime(this.currentAudio.duration);
         }
         
-        // Save progress periodically (every 10 seconds)
-        if (Math.floor(this.currentAudio.currentTime) % 10 === 0) {
+        // Save progress every 30 seconds with proper debouncing
+        const currentSecond = Math.floor(this.currentAudio.currentTime);
+        if (currentSecond > 0 && currentSecond % 30 === 0 && currentSecond !== this.lastSavedTime) {
+            this.lastSavedTime = currentSecond;
             this.saveProgress();
         }
     },

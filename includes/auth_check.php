@@ -1,18 +1,20 @@
 <?php
 /**
  * User Authentication Middleware
+ * Optimized to minimize database queries
  */
 
 require_once __DIR__ . '/init.php';
 
-// Check if user is authenticated
-if (!Session::isLoggedIn()) {
+// Validate session (this already checks user status in one query)
+$sessionData = Session::validateUserSession();
+if (!$sessionData) {
     // Store intended URL for redirect after login
     $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'];
     redirect('index.php');
 }
 
-// Get current user
+// Get current user from cache (Auth::getUser uses session caching)
 $currentUser = Auth::getUser();
 
 if (!$currentUser || $currentUser['status'] !== 'active') {

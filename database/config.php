@@ -23,7 +23,8 @@ define('DB_PASS', 'Ai7579796@AaA');
 define('DB_CHARSET', 'utf8mb4');
 
 // Security settings
-define('SECURE_KEY', 'your-secure-random-key-change-this-in-production-' . bin2hex(random_bytes(16)));
+// IMPORTANT: Use a fixed key - DO NOT use random_bytes() here as it would change on every request!
+define('SECURE_KEY', 'your-secure-random-key-change-this-in-production-a8f3b2c9d1e4f6g7h8i9j0k1l2m3n4o5');
 define('SESSION_LIFETIME', 31536000); // 1 year in seconds
 define('ACCESS_CODE_LIFETIME', 720 * 3600); // 30 days in seconds
 define('AUDIO_TOKEN_LIFETIME', 300); // 5 minutes
@@ -44,6 +45,8 @@ class Database {
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_PERSISTENT => true, // Use persistent connections for better performance
+                PDO::ATTR_TIMEOUT => 10, // 10 second connection timeout
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
             ];
             $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);

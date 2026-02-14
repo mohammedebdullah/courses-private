@@ -82,9 +82,9 @@ class Session {
             return false;
         }
         
-        // Cache validation for 60 seconds to avoid DB query on every API call
+        // Cache validation for 5 minutes to avoid DB query on every page/API call
         $cacheKey = 'session_validated_at';
-        if (isset($_SESSION[$cacheKey]) && (time() - $_SESSION[$cacheKey]) < 60) {
+        if (isset($_SESSION[$cacheKey]) && (time() - $_SESSION[$cacheKey]) < 300) {
             return true; // Session was validated recently, trust it
         }
         
@@ -113,8 +113,8 @@ class Session {
             return false;
         }
         
-        // Update last activity (only every 60 seconds to reduce DB writes)
-        if (!isset($_SESSION['activity_updated_at']) || (time() - $_SESSION['activity_updated_at']) >= 60) {
+        // Update last activity (only every 5 minutes to reduce DB writes)
+        if (!isset($_SESSION['activity_updated_at']) || (time() - $_SESSION['activity_updated_at']) >= 300) {
             self::updateActivity($session['id']);
             $_SESSION['activity_updated_at'] = time();
         }

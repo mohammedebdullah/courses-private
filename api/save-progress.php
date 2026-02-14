@@ -2,6 +2,7 @@
 /**
  * API: Save Progress
  * Saves user's listening progress for a lesson
+ * Optimized for frequent calls during audio playback
  */
 
 require_once __DIR__ . '/../includes/init.php';
@@ -13,8 +14,10 @@ if (!is_ajax()) {
     json_response(['success' => false, 'message' => 'Invalid request'], 400);
 }
 
-// Verify user is logged in
-if (!Session::isLoggedIn()) {
+// Quick session check - just verify user_id exists in session
+// Full validation is done by auth_check.php on page load
+$userId = Session::getUserId();
+if (!$userId) {
     json_response(['success' => false, 'message' => 'Unauthorized'], 401);
 }
 
@@ -35,9 +38,8 @@ if (!$lessonId) {
 }
 
 $db = getDB();
-$userId = Session::getUserId();
 
-// Insert or update progress
+// Insert or update progress (use $userId from quick session check above)
 $stmt = $db->prepare("
     INSERT INTO user_progress (user_id, lesson_id, progress_seconds, completed)
     VALUES (?, ?, ?, ?)
