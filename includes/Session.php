@@ -186,10 +186,18 @@ class Session {
     }
     
     /**
-     * Check if user is logged in
+     * Check if user is logged in (full validation with caching)
      */
     public static function isLoggedIn() {
         return self::validateUserSession() !== false;
+    }
+    
+    /**
+     * Quick check if user appears to be logged in (session vars only, no DB)
+     * Use this for frequent API calls where token-based auth is also in place
+     */
+    public static function isLoggedInQuick() {
+        return isset($_SESSION['user_id']) && isset($_SESSION['session_token']);
     }
     
     /**

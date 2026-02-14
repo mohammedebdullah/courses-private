@@ -366,7 +366,15 @@ function loadLesson(lessonId, title) {
 }
 
 let saveProgressTimeout;
+let lastSavedSecond = 0;
 function saveProgress(currentTime, duration) {
+    // Only save every 30 seconds to reduce server load
+    const currentSecond = Math.floor(currentTime);
+    if (currentSecond === lastSavedSecond || currentSecond % 30 !== 0 || currentSecond === 0) {
+        return;
+    }
+    lastSavedSecond = currentSecond;
+    
     clearTimeout(saveProgressTimeout);
     saveProgressTimeout = setTimeout(() => {
         const completed = duration > 0 && (currentTime / duration) >= 0.9;
@@ -375,15 +383,16 @@ function saveProgress(currentTime, duration) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-Token': csrfToken
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify({
                 lesson_id: currentLessonId,
-                progress_seconds: Math.floor(currentTime),
-                completed: completed
+                progress: currentSecond,
+                completed: completed,
+                csrf_token: csrfToken
             })
         }).catch(e => console.log('Progress save failed'));
-    }, 2000);
+    }, 500);
 }
 
 function showToast(message, type = 'info') {

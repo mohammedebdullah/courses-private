@@ -16,10 +16,12 @@ if (!is_ajax()) {
 
 // Quick session check - just verify user_id exists in session
 // Full validation is done by auth_check.php on page load
-$userId = Session::getUserId();
-if (!$userId) {
+// CSRF token provides additional security for this endpoint
+if (!Session::isLoggedInQuick()) {
     json_response(['success' => false, 'message' => 'Unauthorized'], 401);
 }
+
+$userId = Session::getUserId();
 
 // Get request data
 $input = json_decode(file_get_contents('php://input'), true);

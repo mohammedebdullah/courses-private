@@ -13,8 +13,9 @@ if (!is_ajax()) {
     json_response(['success' => false, 'message' => 'Invalid request'], 400);
 }
 
-// Verify user is logged in
-if (!Session::isLoggedIn()) {
+// Quick session check - full validation done on page load
+// CSRF token provides additional security
+if (!Session::isLoggedInQuick()) {
     json_response(['success' => false, 'message' => 'Unauthorized'], 401);
 }
 

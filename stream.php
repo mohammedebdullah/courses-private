@@ -2,12 +2,14 @@
 /**
  * Audio Streaming Endpoint
  * Secure token-based audio streaming
+ * OPTIMIZED: Minimal session checks - token validation handles auth
  */
 
 require_once __DIR__ . '/includes/init.php';
 
-// Verify user is logged in
-if (!Session::isLoggedIn()) {
+// Quick session check - just verify user_id exists in PHP session
+// Full validation is already done by the audio token system
+if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     exit('Unauthorized');
 }
