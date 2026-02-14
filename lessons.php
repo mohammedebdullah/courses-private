@@ -58,10 +58,15 @@ $stmt = $db->prepare("
 $stmt->execute([$courseId]);
 $otherCourses = $stmt->fetchAll();
 
+// Cache CSRF token and close session BEFORE rendering HTML
+// This releases the session lock so API calls can proceed during page render
+$cachedCsrfToken = csrf_token();
+session_write_close();
+
 include __DIR__ . '/includes/header.php';
 ?>
 
-<meta name="csrf-token" content="<?= htmlspecialchars(csrf_token()) ?>">
+<meta name="csrf-token" content="<?= htmlspecialchars($cachedCsrfToken) ?>">
 
 <!-- Professional Page Header -->
 <div class="page-header">

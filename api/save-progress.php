@@ -21,13 +21,16 @@ if (!Session::isLoggedInQuick()) {
     json_response(['success' => false, 'message' => 'Unauthorized'], 401);
 }
 
+// Get session data we need, then close session to release lock
 $userId = Session::getUserId();
+$csrfToken = $_SESSION['csrf_token'] ?? '';
+session_write_close(); // Release session lock to allow concurrent requests
 
 // Get request data
 $input = json_decode(file_get_contents('php://input'), true);
 
-// Verify CSRF token
-if (!verify_csrf($input['csrf_token'] ?? '')) {
+// Verify CSRF token (use cached token since session is closed)
+if (!hash_equals($csrfToken, $input['csrf_token'] ?? '')) {
     json_response(['success' => false, 'message' => 'Invalid token'], 403);
 }
 

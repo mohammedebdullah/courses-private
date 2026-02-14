@@ -19,11 +19,17 @@ if (!Session::isLoggedInQuick()) {
     json_response(['success' => false, 'message' => 'Unauthorized'], 401);
 }
 
+// Get session data we need, then close session to release lock
+$userId = Session::getUserId();
+$sessionId = Session::getSessionId();
+$csrfToken = $_SESSION['csrf_token'] ?? '';
+session_write_close(); // Release session lock to allow concurrent requests
+
 // Get request data
 $input = json_decode(file_get_contents('php://input'), true);
 
-// Verify CSRF token
-if (!verify_csrf($input['csrf_token'] ?? '')) {
+// Verify CSRF token (use cached token since session is closed)
+if (!hash_equals($csrfToken, $input['csrf_token'] ?? '')) {
     json_response(['success' => false, 'message' => 'Invalid token'], 403);
 }
 
@@ -55,7 +61,7 @@ if (!$lesson) {
 // Check lesson schedule availability (server-side enforcement)
 $availability = LessonSchedule::checkAvailability($lesson);
 if (!$availability['available']) {
-    Security::logActivity('audio_access_denied_schedule', "Access denied due to schedule: {$lesson['title']}", Session::getUserId());
+    Security::logActivity('audio_access_denied_schedule', "Access denied due to schedule: {$lesson['title']}", $userId);
     json_response(['success' => false, 'message' => $availability['message']], 403);
 }
 
@@ -63,11 +69,11 @@ if (!$lesson['audio_id']) {
     json_response(['success' => false, 'message' => 'No audio file available'], 404);
 }
 
-// Generate audio access token
+// Generate audio access token (use cached session values)
 $token = Security::generateAudioToken(
     $lesson['audio_id'],
-    Session::getUserId(),
-    Session::getSessionId()
+    $userId,
+    $sessionId
 );
 
 // Removed logging here for performance - too frequent for every lesson click

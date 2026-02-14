@@ -14,6 +14,10 @@ if (!isset($_SESSION['user_id'])) {
     exit('Unauthorized');
 }
 
+// CRITICAL: Get user ID and close session immediately to prevent blocking other requests
+$currentUserId = $_SESSION['user_id'];
+session_write_close(); // Release session lock NOW - streaming takes a long time
+
 // Get token
 $token = $_GET['token'] ?? '';
 
@@ -30,8 +34,8 @@ if (!$tokenData) {
     exit('Access denied or token expired');
 }
 
-// Verify token belongs to current user
-if ($tokenData['user_id'] != Session::getUserId()) {
+// Verify token belongs to current user (use cached user ID since session is closed)
+if ($tokenData['user_id'] != $currentUserId) {
     // Don't log here - too frequent with audio range requests
     http_response_code(403);
     exit('Access denied');
