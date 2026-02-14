@@ -29,5 +29,9 @@ ON activity_logs(user_id, action, created_at);
 CREATE INDEX IF NOT EXISTS idx_courses_status 
 ON courses(status, created_at);
 
+-- Index for audio_tokens (CRITICAL for audio streaming performance)
+CREATE INDEX IF NOT EXISTS idx_audio_tokens_token_expires 
+ON audio_tokens(token, expires_at);
+
 -- Verify the changes
 SELECT 'Indexes created successfully!' as status;

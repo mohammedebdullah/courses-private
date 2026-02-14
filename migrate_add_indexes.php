@@ -94,6 +94,12 @@ $db = getDB();
                     'name' => 'idx_courses_status',
                     'columns' => 'status, created_at',
                     'sql' => 'CREATE INDEX idx_courses_status ON courses(status, created_at)'
+                ],
+                [
+                    'table' => 'audio_tokens',
+                    'name' => 'idx_audio_tokens_token_expires',
+                    'columns' => 'token, expires_at',
+                    'sql' => 'CREATE INDEX idx_audio_tokens_token_expires ON audio_tokens(token, expires_at)'
                 ]
             ];
             
@@ -179,7 +185,8 @@ $db = getDB();
             ['access_codes', 'idx_access_codes_code_status', 'code, status', 'Quick authentication checks'],
             ['user_sessions', 'idx_user_sessions_user_active', 'user_id, is_active, expires_at', 'Efficient session management'],
             ['activity_logs', 'idx_activity_logs_user_action_time', 'user_id, action, created_at', 'Fast log queries'],
-            ['courses', 'idx_courses_status', 'status, created_at', 'Quick course listings']
+            ['courses', 'idx_courses_status', 'status, created_at', 'Quick course listings'],
+            ['audio_tokens', 'idx_audio_tokens_token_expires', 'token, expires_at', 'CRITICAL: Fast audio streaming']
         ];
         
         foreach ($indexInfo as $info) {

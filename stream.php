@@ -30,7 +30,7 @@ if (!$tokenData) {
 
 // Verify token belongs to current user
 if ($tokenData['user_id'] != Session::getUserId()) {
-    Security::logActivity('unauthorized_audio_access', "Token user mismatch", Session::getUserId());
+    // Don't log here - too frequent with audio range requests
     http_response_code(403);
     exit('Access denied');
 }
@@ -38,9 +38,7 @@ if ($tokenData['user_id'] != Session::getUserId()) {
 // CRITICAL: Check lesson schedule (server-side enforcement to prevent bypass)
 $availability = LessonSchedule::checkAvailability($tokenData);
 if (!$availability['available']) {
-    Security::logActivity('audio_stream_denied_schedule', 
-        "Stream denied - lesson {$tokenData['lesson_id']}: {$availability['status']}", 
-        Session::getUserId());
+    // Don't log here - checked on token generation already
     http_response_code(403);
     exit('ئەڤ وانە ئێدی یا بەردەست نینە');
 }
@@ -57,13 +55,13 @@ if (!preg_match('/^[a-zA-Z]:[\\\\\\/]/', $filePath) && $filePath[0] !== '/') {
 $filePath = realpath($filePath);
 
 if (!$filePath || !file_exists($filePath)) {
-    Security::logActivity('audio_file_not_found', "File not found: " . ($tokenData['file_path'] ?? 'unknown'), Session::getUserId());
+    // Don't log here - too frequent, file issues are rare
     http_response_code(404);
     exit('File not found');
 }
 
-// Log access
-Security::logActivity('audio_stream', "Streaming audio file", Session::getUserId());
+// Don't log streaming - audio players make 10-50+ requests per playback (range, buffer, seek)
+// Logging every request causes massive performance issues
 
 // Stream the audio
 $stream = new AudioStream($filePath, $tokenData['mime_type']);
