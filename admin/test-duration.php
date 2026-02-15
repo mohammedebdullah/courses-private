@@ -122,37 +122,60 @@ if (!empty($audioFiles) && file_exists(APP_ROOT . '/' . $audioFiles[0]['file_pat
     $testFile = APP_ROOT . '/' . $audioFiles[0]['file_path'];
     
     echo '<div class="result info">';
-    echo '<strong>Testing with:</strong> ' . htmlspecialchars($audioFiles[0]['original_filename']) . '<br><br>';
+    echo '<strong>Testing with:</strong> ' . htmlspecialchars($audioFiles[0]['original_filename']) . '<br>';
+    echo '<strong>File size:</strong> ' . number_format(filesize($testFile) / 1024 / 1024, 2) . ' MB<br><br>';
     
     // Test getID3
     if (class_exists('getID3')) {
         try {
-            $getID3 = new \getID3();
+            require_once(APP_ROOT . '/vendor/james-heinrich/getid3/getid3/getid3.php');
+            $getID3 = new getID3();
             $fileInfo = $getID3->analyze($testFile);
+            
+            if (isset($fileInfo['error'])) {
+                echo '❌ getID3 Errors: ' . implode(', ', $fileInfo['error']) . '<br>';
+            }
+            
             if (isset($fileInfo['playtime_seconds'])) {
-                echo '✅ getID3: ' . gmdate('H:i:s', intval($fileInfo['playtime_seconds'])) . '<br>';
+                echo '✅ getID3 Duration: ' . gmdate('H:i:s', intval($fileInfo['playtime_seconds'])) . ' (' . intval($fileInfo['playtime_seconds']) . ' seconds)<br>';
+                if (isset($fileInfo['audio']['bitrate'])) {
+                    echo '&nbsp;&nbsp;&nbsp;Bitrate: ' . intval($fileInfo['audio']['bitrate'] / 1000) . ' kbps<br>';
+                }
             } else {
                 echo '❌ getID3: Could not detect duration<br>';
+                if (isset($fileInfo['playtime_string'])) {
+                    echo '&nbsp;&nbsp;&nbsp;Playtime string: ' . $fileInfo['playtime_string'] . '<br>';
+                }
             }
         } catch (Exception $e) {
-            echo '❌ getID3 Error: ' . htmlspecialchars($e->getMessage()) . '<br>';
+            echo '❌ getID3 Exception: ' . htmlspecialchars($e->getMessage()) . '<br>';
         }
+    } else {
+        echo '❌ getID3 class not available<br>';
     }
+    
+    echo '<br>';
     
     // Test ffprobe
     $output = [];
     $cmd = 'ffprobe -i ' . escapeshellarg($testFile) . ' -show_entries format=duration -v quiet -of csv="p=0" 2>&1';
     exec($cmd, $output, $returnCode);
     if ($returnCode === 0 && !empty($output[0]) && is_numeric($output[0])) {
-        echo '✅ ffprobe: ' . gmdate('H:i:s', intval(floatval($output[0]))) . '<br>';
+        $duration = intval(floatval($output[0]));
+        echo '✅ ffprobe Duration: ' . gmdate('H:i:s', $duration) . ' (' . $duration . ' seconds)<br>';
     } else {
-        echo '❌ ffprobe: Not available or failed<br>';
+        echo '❌ ffprobe: Not available or failed (return code: ' . $returnCode . ')<br>';
     }
     
-    // Test native PHP
+    echo '<br>';
+    
+    // Test file size estimate with different bitrates
     $fileSize = filesize($testFile);
-    $estimatedDuration = intval($fileSize / (128 * 1000 / 8));
-    echo '⚠ Fallback (file size estimate): ' . gmdate('H:i:s', $estimatedDuration) . '<br>';
+    echo '<strong>File Size Estimates:</strong><br>';
+    foreach ([64, 96, 128, 160, 192, 256, 320] as $bitrate) {
+        $est = intval($fileSize / ($bitrate * 1024 / 8));
+        echo '&nbsp;&nbsp;' . $bitrate . ' kbps: ' . gmdate('H:i:s', $est) . '<br>';
+    }
     
     echo '</div>';
 }

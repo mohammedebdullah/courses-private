@@ -105,14 +105,21 @@ class AudioStream {
         // Try using getID3 library first (most accurate)
         if (class_exists('getID3')) {
             try {
-                $getID3 = new \getID3();
+                require_once(APP_ROOT . '/vendor/james-heinrich/getid3/getid3/getid3.php');
+                $getID3 = new getID3();
                 $fileInfo = $getID3->analyze($filePath);
+                
+                // Check for errors
+                if (isset($fileInfo['error'])) {
+                    error_log("getID3 file error: " . implode(', ', $fileInfo['error']));
+                }
+                
                 if (isset($fileInfo['playtime_seconds']) && $fileInfo['playtime_seconds'] > 0) {
-                    return intval($fileInfo['playtime_seconds']);
+                    return intval(round($fileInfo['playtime_seconds']));
                 }
             } catch (Exception $e) {
                 // Log error for debugging
-                error_log("getID3 error: " . $e->getMessage());
+                error_log("getID3 exception: " . $e->getMessage());
             }
         }
         
@@ -122,13 +129,13 @@ class AudioStream {
         exec($cmd, $output, $returnCode);
         
         if ($returnCode === 0 && !empty($output[0]) && is_numeric($output[0])) {
-            return intval(floatval($output[0]));
+            return intval(round(floatval($output[0])));
         }
         
         // Try reading MP3 duration using native PHP (for MP3 files)
-        if (function_exists('getid3_lib') || strtolower(pathinfo($filePath, PATHINFO_EXTENSION)) === 'mp3') {
+        if (strtolower(pathinfo($filePath, PATHINFO_EXTENSION)) === 'mp3') {
             $duration = self::getMp3DurationNative($filePath);
-            if ($duration > 0) {
+            if ($duration > 0 && $duration < 86400) { // Sanity check: less than 24 hours
                 return $duration;
             }
         }
@@ -136,7 +143,14 @@ class AudioStream {
         // Fallback: estimate based on file size (assuming 128kbps MP3)
         $fileSize = filesize($filePath);
         $estimatedBitrate = 128; // 128 kbps
-        return intval($fileSize / ($estimatedBitrate * 1000 / 8));
+        $duration = intval($fileSize / ($estimatedBitrate * 1024 / 8)); // Fixed: 1024 not 1000
+        
+        // Sanity check
+        if ($duration > 86400) { // More than 24 hours is probably wrong
+            $duration = intval($fileSize / (192 * 1024 / 8)); // Try higher bitrate
+        }
+        
+        return $duration;
     }
     
     /**
