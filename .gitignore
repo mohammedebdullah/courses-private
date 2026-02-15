@@ -45,5 +45,5 @@ logs/
 node_modules/
 
 # PHP
-vendor/
+# vendor/ folder now included for deployment
 composer.lock
