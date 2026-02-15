@@ -309,8 +309,12 @@ Security::setSecurityHeaders();
                 <p>سلاڤ بەرێز ژبەری دەست ب ڤەکرنا کۆرسی بکەی ڤان خالان جێبەجێ بکە :</p>
                 <ul>
                     <li>
-                        هیڤیە کۆرسێ خۆ لسەر بەرنامی Google Chrome یان ژی بەرنامێ Brave یان ژی بەرنامێ Firefox یان ژی بەرنامێ Safari ڤەکە ئەگەر تە نەبن دشێی داونلۆد بکەی و لسەر ڤەکەی.
+                        هیڤیە کۆرسێ خۆ لسەر بەرنامی Google یان ژی بەرنامێ  Google Chrome یان ژی بەرنامێ Brave یان ژی بەرنامێ Firefox یان ژی بەرنامێ Safari ڤەکە ئەگەر تە نەبن دشێی داونلۆد بکەی و لسەر ڤەکەی.
                         <div class="browser-icons">
+                                <span class="browser-icon">
+                                <img src="assets/img/Google_Favicon_2025.svg.png" alt="Chrome">
+                                <!-- Google -->
+                            </span>
                             <span class="browser-icon">
                                 <img src="assets/img/Google_Chrome_icon_(February_2022).svg.png" alt="Chrome">
                                 <!-- Chrome -->
