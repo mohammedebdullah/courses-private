@@ -36,6 +36,7 @@ include __DIR__ . '/includes/header.php';
 <div class="page-header">
     <div class="container">
         <h1>وانێن بەردەست</h1>
+        <p class="page-description">وانە  بۆ دەمەکێ دیارکری بەردەستن، هیڤیدکەم ل دەما دیارکری دا گوهداریا وانان بکە.</p>
         <!-- <p>کۆرسەکێ هەلبژێرە بۆ دەستپێکرنا فێربوونێ</p> -->
     </div>
     <!-- Wave Decoration -->
