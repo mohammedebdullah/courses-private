@@ -13,18 +13,18 @@
     <title><?= htmlspecialchars($pageTitle) ?></title>
     
     <!-- Favicons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/light.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/light.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/dark.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="assets/img/dark.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="assets/img/dark.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/dark.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/light.png?v=<?= time() ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/light.png?v=<?= time() ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/dark.png?v=<?= time() ?>">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/img/dark.png?v=<?= time() ?>">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/img/dark.png?v=<?= time() ?>">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/dark.png?v=<?= time() ?>">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="<?php echo 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>">
     <meta property="og:title" content="<?= htmlspecialchars($pageTitle) ?>">
-    <meta property="og:image" content="<?php echo 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST']; ?>/assets/img/dark.png">
+    <meta property="og:image" content="<?php echo 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST']; ?>/assets/img/dark.png?v=<?= time() ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     
@@ -32,7 +32,7 @@
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="<?php echo 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>">
     <meta property="twitter:title" content="<?= htmlspecialchars($pageTitle) ?>">
-    <meta property="twitter:image" content="<?php echo 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST']; ?>/assets/img/dark.png">
+    <meta property="twitter:image" content="<?php echo 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST']; ?>/assets/img/dark.png?v=<?= time() ?>">
     
     <!-- Apple Mobile Web App -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -73,7 +73,7 @@
             <div class="header-inner">
                 <!-- Professional Logo -->
                 <a href="courses.php" class="logo">
-                    <img src="assets/img/dark.png" alt="کۆرسێ دەنگی" class="logo-image">
+                    <img src="assets/img/dark.png?v=<?= time() ?>" alt="کۆرسێ دەنگی" class="logo-image">
                     <!-- <div class="logo-text">
                         <span class="logo-title">کۆرسێ دەنگی</span>
                         <span class="logo-subtitle">پلاتفۆرما فێربوونێ</span>
