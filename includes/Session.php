@@ -162,12 +162,40 @@ class Session {
      */
     public static function invalidateUserSessions($userId) {
         $db = getDB();
+        
+        // First, get all active sessions for this user to force logout
+        $stmt = $db->prepare("
+            SELECT session_token 
+            FROM user_sessions 
+            WHERE user_id = ? AND is_active = 1
+        ");
+        $stmt->execute([$userId]);
+        $sessions = $stmt->fetchAll();
+        
+        // Invalidate all sessions in database
         $stmt = $db->prepare("
             UPDATE user_sessions 
             SET is_active = 0 
             WHERE user_id = ?
         ");
         $stmt->execute([$userId]);
+        
+        // Force immediate logout by clearing validation cache
+        // This ensures user is logged out on next page load/API call
+        foreach ($sessions as $session) {
+            // We can't directly clear PHP session of other users,
+            // but marking is_active = 0 and setting expires_at in the past
+            // will force logout on their next request
+            $stmt = $db->prepare("
+                UPDATE user_sessions 
+                SET expires_at = NOW() - INTERVAL 1 HOUR 
+                WHERE session_token = ?
+            ");
+            $stmt->execute([$session['session_token']]);
+        }
+        
+        // Log the action
+        Security::logActivity('sessions_invalidated', "All sessions invalidated for user ID: $userId", $userId);
     }
     
     /**

@@ -39,17 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($action === 'reactivate') {
             $codeId = intval($_POST['id'] ?? 0);
-            if ($codeId) {
-                AccessCode::reactivate($codeId, $currentAdmin['id']);
-                $message = 'کۆدێ دەستپێگەهشتنێ دووبارە هاتە کاراکرن.';
-            }
-        }        
-        if ($action === 'reactivate') {
-            $codeId = intval($_POST['id'] ?? 0);
             $extendHours = intval($_POST['extend_hours'] ?? 0);
             if ($codeId) {
                 if (AccessCode::reactivate($codeId, $currentAdmin['id'], $extendHours ?: null)) {
-                    $message = 'کۆدێ دەستپێگەهشتنێ هاتە چالاککردنەوە. ئێستا بەکارهێنەر دەتوانێت دووبارە بیبەکاربێنێت.';
+                    $message = 'کۆدێ دەستپێگەهشتنێ هاتە چالاککردنەوە. بەکارهێنەر هاتە دەرخستن و کۆد ئێستا بەردەستە بۆ بەکارهێنانا دووبارە.';
                 } else {
                     $error = 'هەڵەیەک ڕوویدا لە کاتی چالاککردنەوەی کۆد.';
                 }
@@ -295,6 +288,12 @@ include __DIR__ . '/includes/sidebar.php';
 					<input type="hidden" name="id" value="<?= $code['id'] ?>">
 					<div class="modal-body">
 						<p class="mb-3">تە دڤێت ڤی کۆدی چالاک بکەیە ڤە: <strong class="font-monospace"><?= htmlspecialchars($code['code']) ?></strong>?</p>
+						<?php if ($code['user_id'] && $code['user_name']): ?>
+						<div class="alert alert-warning mb-0">
+							<i class="ti ti-alert-triangle me-2"></i>
+							<strong>تێبینی:</strong> بەکارهێنەر <strong><?= htmlspecialchars($code['user_name']) ?></strong> دێ بێتە دەرخستن و ئەکاونتێ وان دێ بێتە نەکاراکرن.
+						</div>
+						<?php endif; ?>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لێڤەبوون</button>
