@@ -118,9 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 										<div class="form-login">
 											<button type="submit" class="btn btn-primary w-100">چوونەژوورەوە</button>
 										</div>
-										<p class="text-center mt-3 text-muted small">
-											بنەڕەت: admin / admin123
-										</p>
+								
 									</div>
 								</div>
 							</form>
