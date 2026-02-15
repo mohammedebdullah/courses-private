@@ -213,6 +213,7 @@ include __DIR__ . '/includes/sidebar.php';
 										<thead class="thead-light">
 											<tr>
 												<th>کۆد</th>
+												<th>کۆپی</th>
 												<th>ڕەوش</th>
 												<th>بەکارهێنەر</th>
 												<th>بەردەستە هەتا</th>
@@ -228,8 +229,11 @@ include __DIR__ . '/includes/sidebar.php';
 													<small class="text-muted"><?= htmlspecialchars($code['notes']) ?></small>
 													<?php endif; ?>
 												</td>
-												<td>
-													<?php if ($code['status'] === 'active' && strtotime($code['valid_until']) > time()): ?>
+												<td>												<button type="button" class="btn btn-sm btn-outline-primary copy-code-btn" data-code="<?= htmlspecialchars($code['code']) ?>" title="کۆپیکردنی کۆد">
+													<i class="ti ti-copy"></i>
+												</button>
+											</td>
+											<td>													<?php if ($code['status'] === 'active' && strtotime($code['valid_until']) > time()): ?>
 													<span class="badge bg-success fs-7" style="font-size: .6rem;">بەردەست</span>
 													<?php elseif ($code['status'] === 'used'): ?>
 													<span class="badge bg-secondary fs-7">بکارئینای</span>
@@ -318,6 +322,36 @@ function copyAllCodes() {
         });
     });
 }
+
+// Copy individual code
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.copy-code-btn')) {
+        const btn = e.target.closest('.copy-code-btn');
+        const code = btn.getAttribute('data-code');
+        
+        navigator.clipboard.writeText(code).then(() => {
+            // Change icon temporarily
+            const icon = btn.querySelector('i');
+            const originalClass = icon.className;
+            icon.className = 'ti ti-check';
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                icon.className = originalClass;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-primary');
+            }, 1500);
+        }).catch(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'هەڵە!',
+                text: 'کوپیکرن سەرکەفت نەبوو',
+                confirmButtonText: 'باشە'
+            });
+        });
+    }
+});
 
 // SweetAlert for revoke confirmation
 document.addEventListener('DOMContentLoaded', function() {
