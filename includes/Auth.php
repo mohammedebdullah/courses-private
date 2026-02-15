@@ -13,7 +13,7 @@ class Auth {
         
         // Check rate limiting
         if (!Security::checkRateLimit(get_client_ip())) {
-            return ['success' => false, 'message' => 'هەوڵدانی زۆر زۆرت. تکایە دواتر هەوڵ بدەرەوە.'];
+            return ['success' => false, 'message' => 'هەولدانا زۆرە . هیڤیدکەم پاشی دوبارە هەولبد.'];
         }
         
         // Find and validate access code
@@ -21,7 +21,7 @@ class Auth {
         
         if (!$accessCode) {
             Security::logActivity('failed_login', "Invalid access code attempt: $code");
-            return ['success' => false, 'message' => 'کۆدی هەڵە یان بەسەرچووە.'];
+            return ['success' => false, 'message' => 'کودێ خەلەتە یان سەرڤەچوویە.'];
         }
         
         // Check if code already has a user and it's not the same device
@@ -80,7 +80,7 @@ class Auth {
         
         // Check rate limiting
         if (!Security::checkRateLimit(get_client_ip())) {
-            return ['success' => false, 'message' => 'هەوڵدانی زۆر زۆرت. تکایە دواتر هەوڵ بدەرەوە.'];
+            return ['success' => false, 'message' => 'هەولدانا زۆرە . هیڤیدکەم پاشی دوبارە هەولبد.'];
         }
         
         $stmt = $db->prepare("
@@ -93,7 +93,7 @@ class Auth {
         
         if (!$admin || !password_verify($password, $admin['password'])) {
             Security::logActivity('failed_login', "Failed admin login attempt: $username");
-            return ['success' => false, 'message' => 'زانیارییەکان هەڵەن.'];
+            return ['success' => false, 'message' => 'زانیاری خەلەتێن.'];
         }
         
         // Store admin session
