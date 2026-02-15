@@ -13,16 +13,30 @@ class Session {
             // Secure session configuration
             ini_set('session.use_only_cookies', 1);
             ini_set('session.use_strict_mode', 1);
-            ini_set('session.cookie_httponly', 1);
-            ini_set('session.cookie_samesite', 'Strict');
             ini_set('session.gc_maxlifetime', SESSION_LIFETIME);
             
-            // Keep session alive across browser restarts - only logout on manual logout or cookie clear
-            ini_set('session.cookie_lifetime', SESSION_LIFETIME); // Persist for 1 year
+            // Set cookie parameters before starting session (required for Safari)
+            $isSecure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
             
-            // Use secure cookie if HTTPS
-            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-                ini_set('session.cookie_secure', 1);
+            // Use session_set_cookie_params for better browser compatibility (especially Safari)
+            // PHP 7.3+ supports array parameter, fallback for older versions
+            if (PHP_VERSION_ID >= 70300) {
+                session_set_cookie_params([
+                    'lifetime' => SESSION_LIFETIME, // 1 year - persist across browser restarts
+                    'path' => '/',
+                    'domain' => '',
+                    'secure' => $isSecure,
+                    'httponly' => true,
+                    'samesite' => 'Lax' // Changed from Strict to Lax for better Safari compatibility
+                ]);
+            } else {
+                session_set_cookie_params(
+                    SESSION_LIFETIME, // lifetime
+                    '/',              // path
+                    '',               // domain
+                    $isSecure,        // secure
+                    true              // httponly
+                );
             }
             
             session_name('AUDIO_COURSE_SESS');

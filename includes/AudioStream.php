@@ -105,13 +105,14 @@ class AudioStream {
         // Try using getID3 library first (most accurate)
         if (class_exists('getID3')) {
             try {
-                $getID3 = new getID3;
+                $getID3 = new \getID3();
                 $fileInfo = $getID3->analyze($filePath);
                 if (isset($fileInfo['playtime_seconds']) && $fileInfo['playtime_seconds'] > 0) {
                     return intval($fileInfo['playtime_seconds']);
                 }
             } catch (Exception $e) {
-                // Continue to fallback methods
+                // Log error for debugging
+                error_log("getID3 error: " . $e->getMessage());
             }
         }
         
@@ -124,10 +125,63 @@ class AudioStream {
             return intval(floatval($output[0]));
         }
         
+        // Try reading MP3 duration using native PHP (for MP3 files)
+        if (function_exists('getid3_lib') || strtolower(pathinfo($filePath, PATHINFO_EXTENSION)) === 'mp3') {
+            $duration = self::getMp3DurationNative($filePath);
+            if ($duration > 0) {
+                return $duration;
+            }
+        }
+        
         // Fallback: estimate based on file size (assuming 128kbps MP3)
         $fileSize = filesize($filePath);
         $estimatedBitrate = 128; // 128 kbps
         return intval($fileSize / ($estimatedBitrate * 1000 / 8));
+    }
+    
+    /**
+     * Get MP3 duration using native PHP (fallback when getID3 not available)
+     */
+    private static function getMp3DurationNative($filePath) {
+        $fd = @fopen($filePath, 'rb');
+        if (!$fd) {
+            return 0;
+        }
+        
+        $duration = 0;
+        $bitrate = 128000; // Default bitrate
+        
+        // Read first 10KB to find bitrate
+        $data = fread($fd, 10240);
+        fclose($fd);
+        
+        // Look for MP3 frame header
+        for ($i = 0; $i < strlen($data) - 4; $i++) {
+            if (ord($data[$i]) == 0xFF && (ord($data[$i + 1]) & 0xE0) == 0xE0) {
+                $header = (ord($data[$i + 1]) << 16) | (ord($data[$i + 2]) << 8) | ord($data[$i + 3]);
+                
+                // Extract bitrate index
+                $bitrateIndex = ($header >> 12) & 0x0F;
+                $sampleRateIndex = ($header >> 10) & 0x03;
+                
+                // Bitrate table for MPEG1 Layer 3
+                $bitrates = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0];
+                $sampleRates = [44100, 48000, 32000];
+                
+                if ($bitrateIndex > 0 && $bitrateIndex < 15 && $sampleRateIndex < 3) {
+                    $bitrate = $bitrates[$bitrateIndex] * 1000;
+                    break;
+                }
+            }
+        }
+        
+        // Calculate duration based on file size and bitrate
+        $fileSize = filesize($filePath);
+        if ($bitrate > 0) {
+            $duration = intval(($fileSize * 8) / $bitrate);
+        }
+        
+        return $duration;
     }
     
     /**
