@@ -1582,7 +1582,7 @@ ul {
 
 .login-header {
     text-align: center;
-    margin-bottom: 36px;
+    margin-bottom: 16px;
 }
 
 .login-header .logo {
@@ -1619,8 +1619,8 @@ ul {
 
 .form-control {
     width: 100%;
-    padding: 14px 18px;
-    font-size: 1rem;
+    padding: 10px 14px;
+    font-size: 0.9rem;
     font-family: inherit;
     border: 2px solid var(--bg-light);
     border-radius: var(--radius-sm);
@@ -1636,7 +1636,7 @@ ul {
 .form-control:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px var(--primary-bg-subtle);
+    /* box-shadow: 0 0 0 4px var(--primary-bg-subtle); */
 }
 
 /* Buttons */
@@ -1645,8 +1645,8 @@ ul {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 14px 28px;
-    font-size: 1rem;
+    padding: 10px 20px;
+    font-size: 0.9rem;
     font-weight: 600;
     font-family: inherit;
     border: none;
@@ -1972,6 +1972,7 @@ ul {
     
     .login-header h1 {
         font-size: 1.5rem;
+        
     .header-inner {
         gap: 10px;
     }
