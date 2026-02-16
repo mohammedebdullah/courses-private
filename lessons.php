@@ -23,7 +23,7 @@ if (!$course) {
     redirect('courses.php');
 }
 
-$pageTitle = 'Lessons-List';
+$pageTitle = 'لیستا وانان';
 
 // Get lessons with audio files - optimized query (will use indexes automatically if they exist)
 $stmt = $db->prepare("

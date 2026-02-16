@@ -2,7 +2,8 @@
     
     <footer class="footer">
         <div class="container">
-            <p> All rights reserved &copy; <?= date('Y') ?> </p>
+            <p> هەمی ماف پاراستینە -  وانە </p>
+            <p><?= date('Y') ?>&copy;</p>
         </div>
     </footer>
     

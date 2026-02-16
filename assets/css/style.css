@@ -232,7 +232,7 @@ ul {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 0;
+    /* padding: 16px 0; */
     gap: 30px;
     position: relative;
     z-index: 1;
@@ -255,7 +255,7 @@ ul {
 } */
 
 .logo-image {
-    height: 70px;
+    height: 90px;
     width: auto;
     /* transition: var(--transition); */
     /* filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1)); */
@@ -1857,7 +1857,7 @@ ul {
 @media (max-width: 768px) {
     .header-inner {
         gap: 15px;
-        padding: 12px 0;
+        /* padding: 12px 0; */
     }
     .lesson-item {
    
@@ -1870,7 +1870,7 @@ ul {
     }
     
     .logo-image {
-        height: 42px;
+        height: 62px;
     }
     
     .logo-title {

@@ -5,7 +5,7 @@
 
 require_once __DIR__ . '/includes/auth_check.php';
 
-$pageTitle = 'Courses-list';
+$pageTitle = 'وانە';
 
 // Get all active courses - optimized query with specific columns
 $db = getDB();
