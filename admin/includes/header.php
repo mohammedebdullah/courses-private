@@ -9,13 +9,13 @@
 				<!-- Logo -->
 				<div class="header-left active">
 					<a href="index.php" class="logo logo-normal">
-						<img src="assets/img/logos/dark.png" alt="Img">
+						<img src="assets/img/logos/black.png" alt="Img">
 					</a>
 					<a href="index.php" class="logo logo-white">
-						<img src="assets/img/logos/light.png" alt="Img">
+						<img src="assets/img/logos/white.png" alt="Img">
 					</a>
 					<a href="index.php" class="logo-small">
-						<img src="assets/img/logos/dark.png" alt="Img">
+						<img src="assets/img/logos/black.png" alt="Img">
 					</a>
 				</div>
 				<!-- /Logo -->
