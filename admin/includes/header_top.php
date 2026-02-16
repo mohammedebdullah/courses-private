@@ -17,8 +17,8 @@
 	<script src="assets/js/theme-script.js"></script>
 
 	<!-- Favicon -->
-	<link rel="shortcut icon" type="image/x-icon" href="assets/img/logos/white.png">
-	<link rel="apple-touch-icon" sizes="180x180" href="assets/img/logos/white.png">
+	<link rel="shortcut icon" type="image/x-icon" href="assets/img/logos/light.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="assets/img/logos/light.png">
 
 	<!-- Bootstrap CSS -->
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">

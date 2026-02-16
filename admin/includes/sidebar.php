@@ -8,13 +8,13 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 		<!-- Logo -->
 		<div class="sidebar-logo">
 			<a href="index.php" class="logo logo-normal">
-				<img src="assets/img/logos/black.png" alt="Logo">
+				<img src="assets/img/logos/dark.png" alt="Logo">
 			</a>
 			<a href="index.php" class="logo logo-white">
-				<img src="assets/img/logos/white.png" alt="Logo">
+				<img src="assets/img/logos/light.png" alt="Logo">
 			</a>
 			<a href="index.php" class="logo-small">
-				<img src="assets/img/logos/black.png" alt="Img">
+				<img src="assets/img/logos/dark.png" alt="Img">
 			</a>
 			<a id="toggle_btn" href="javascript:void(0);">
 				<i data-feather="chevrons-left" class="feather-16"></i>
