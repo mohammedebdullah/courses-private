@@ -1868,10 +1868,10 @@ ul {
     .logo-subtitle {
         display: none;
     }
-    
+/*     
     .logo-image {
-        height: 62px;
-    }
+        height: 82px !important;
+    } */
     
     .logo-title {
         font-size: 1.1rem;
