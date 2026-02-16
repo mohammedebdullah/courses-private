@@ -261,8 +261,8 @@ let currentLessonId = <?= !empty($lessons) ? $lessons[0]['id'] : 0 ?>;
 const courseId = <?= $courseId ?>;
 const csrfToken = '<?= csrf_token() ?>';
 const courseTitle = '<?= htmlspecialchars($course['title'], ENT_QUOTES) ?>';
-// Get full absolute URL for logo (lock screen requires full URL)
-const logoUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/assets/img/dark.png';
+// Get full absolute URL for logo with cache-busting parameter
+const logoUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/assets/img/dark.png?v=<?= time() ?>';
 
 const audioPlayer = document.getElementById('mainAudioPlayer');
 const nowPlayingTitle = document.getElementById('nowPlayingTitle');
