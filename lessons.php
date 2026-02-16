@@ -260,9 +260,84 @@ include __DIR__ . '/includes/header.php';
 let currentLessonId = <?= !empty($lessons) ? $lessons[0]['id'] : 0 ?>;
 const courseId = <?= $courseId ?>;
 const csrfToken = '<?= csrf_token() ?>';
+const courseTitle = '<?= htmlspecialchars($course['title'], ENT_QUOTES) ?>';
+// Get full absolute URL for logo (lock screen requires full URL)
+const logoUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/assets/img/light.png';
 
 const audioPlayer = document.getElementById('mainAudioPlayer');
 const nowPlayingTitle = document.getElementById('nowPlayingTitle');
+const mobileNowPlayingTitle = document.getElementById('mobileNowPlayingTitle');
+
+// Media Session API for lock screen controls
+function updateMediaSession(lessonTitle) {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: lessonTitle,
+            artist: courseTitle,
+            artwork: [
+                { src: logoUrl, sizes: '96x96', type: 'image/png' },
+                { src: logoUrl, sizes: '128x128', type: 'image/png' },
+                { src: logoUrl, sizes: '192x192', type: 'image/png' },
+                { src: logoUrl, sizes: '256x256', type: 'image/png' },
+                { src: logoUrl, sizes: '384x384', type: 'image/png' },
+                { src: logoUrl, sizes: '512x512', type: 'image/png' },
+            ]
+        });
+        
+        console.log('Media Session updated with logo:', logoUrl); // Debug log
+        
+        // Setup action handlers for lock screen controls
+        navigator.mediaSession.setActionHandler('play', function() {
+            audioPlayer.play();
+        });
+        
+        navigator.mediaSession.setActionHandler('pause', function() {
+            audioPlayer.pause();
+        });
+        
+        navigator.mediaSession.setActionHandler('seekbackward', function() {
+            audioPlayer.currentTime = Math.max(audioPlayer.currentTime - 10, 0);
+        });
+        
+        navigator.mediaSession.setActionHandler('seekforward', function() {
+            audioPlayer.currentTime = Math.min(audioPlayer.currentTime + 10, audioPlayer.duration);
+        });
+        
+        // Update position state
+        navigator.mediaSession.setActionHandler('seekto', function(details) {
+            if (details.fastSeek && 'fastSeek' in audioPlayer) {
+                audioPlayer.fastSeek(details.seekTime);
+            } else {
+                audioPlayer.currentTime = details.seekTime;
+            }
+        });
+    }
+}
+
+// Update position state for lock screen
+audioPlayer.addEventListener('loadedmetadata', function() {
+    if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+        navigator.mediaSession.setPositionState({
+            duration: audioPlayer.duration,
+            playbackRate: audioPlayer.playbackRate,
+            position: audioPlayer.currentTime
+        });
+    }
+});
+
+audioPlayer.addEventListener('timeupdate', function() {
+    if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+        try {
+            navigator.mediaSession.setPositionState({
+                duration: audioPlayer.duration,
+                playbackRate: audioPlayer.playbackRate,
+                position: audioPlayer.currentTime
+            });
+        } catch (e) {
+            // Ignore errors from setPositionState
+        }
+    }
+});
 
 // Audio error handler
 audioPlayer.addEventListener('error', function(e) {
@@ -275,7 +350,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const firstLesson = document.querySelector('.lesson-item:not(.no-audio):not(.lesson-expired)');
     if (firstLesson && firstLesson.dataset.lessonId) {
         firstLesson.classList.add('playing');
-        loadLesson(firstLesson.dataset.lessonId, firstLesson.dataset.title);
+        const lessonTitle = firstLesson.dataset.title;
+        updateMediaSession(lessonTitle);
+        loadLesson(firstLesson.dataset.lessonId, lessonTitle);
     }
     
     // Click handlers for lesson items
@@ -336,6 +413,9 @@ function loadLesson(lessonId, title) {
     
     // Update title with loading indicator
     nowPlayingTitle.textContent = '...';
+    if (mobileNowPlayingTitle) {
+        mobileNowPlayingTitle.textContent = '...';
+    }
     
     // Disable audio player during load
     audioPlayer.style.opacity = '0.5';
@@ -357,6 +437,12 @@ function loadLesson(lessonId, title) {
         if (data.success && data.token) {
             // Update title
             nowPlayingTitle.textContent = title;
+            if (mobileNowPlayingTitle) {
+                mobileNowPlayingTitle.textContent = title;
+            }
+            
+            // Update Media Session for lock screen
+            updateMediaSession(title);
             
             const streamUrl = 'stream.php?token=' + data.token;
             audioPlayer.src = streamUrl;
@@ -374,6 +460,9 @@ function loadLesson(lessonId, title) {
             }
         } else {
             nowPlayingTitle.textContent = 'هەڵە';
+            if (mobileNowPlayingTitle) {
+                mobileNowPlayingTitle.textContent = 'هەڵە';
+            }
             audioPlayer.style.opacity = '1';
             audioPlayer.style.pointerEvents = 'auto';
             showToast(data.message || 'هەڵەیەک ڕوویدا', 'error');
@@ -386,6 +475,9 @@ function loadLesson(lessonId, title) {
         }
         console.error('Error:', error);
         nowPlayingTitle.textContent = 'هەڵە';
+        if (mobileNowPlayingTitle) {
+            mobileNowPlayingTitle.textContent = 'هەڵە';
+        }
         audioPlayer.style.opacity = '1';
         audioPlayer.style.pointerEvents = 'auto';
         showToast('هەڵەی پەیوەندی', 'error');
