@@ -1,6 +1,6 @@
 				<div class="footer d-sm-flex align-items-center justify-content-between border-top bg-white p-3">
-					<p class="mb-0"><?php echo date('Y'); ?> &copy; کۆرسی دەنگی</p>
-					<p>هەموو مافەکان پارێزراون</p>
+					<p class="mb-0">2026 © Courses. All Right Reserved</p>
+					<p>Designed & Developed by BM-SOFTWARES</p>
 				</div>	
 			</div>
 		</div>

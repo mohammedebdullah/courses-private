@@ -346,6 +346,8 @@ audioPlayer.addEventListener('error', function(e) {
 });
 
 // Initialize first lesson
+let isLoadingLesson = false; // Move to global scope for proper state management
+
 document.addEventListener('DOMContentLoaded', function() {
     const firstLesson = document.querySelector('.lesson-item:not(.no-audio):not(.lesson-expired)');
     if (firstLesson && firstLesson.dataset.lessonId) {
@@ -356,7 +358,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Click handlers for lesson items
-    let isLoadingLesson = false;
     document.querySelectorAll('.lesson-item').forEach(item => {
         item.addEventListener('click', function(e) {
             e.stopImmediatePropagation();
@@ -376,9 +377,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const lessonId = this.dataset.lessonId;
             const title = this.dataset.title;
             
-            // Skip if already loading this lesson
-            if (isLoadingLesson && currentLessonId === parseInt(lessonId)) {
+            // Block ALL lesson loading while another is loading (not just same lesson)
+            if (isLoadingLesson) {
                 return;
+            }
+            
+            // Skip if already playing this lesson
+            if (currentLessonId === parseInt(lessonId) && !audioPlayer.paused) {
+                return;
+            }
+            
+            // Pause current audio before loading new one
+            if (!audioPlayer.paused) {
+                audioPlayer.pause();
             }
             
             // Update active state
@@ -411,6 +422,10 @@ function loadLesson(lessonId, title) {
     
     currentLessonId = parseInt(lessonId);
     
+    // Stop and clear current audio immediately for faster response
+    audioPlayer.pause();
+    audioPlayer.src = '';
+    
     // Update title with loading indicator
     nowPlayingTitle.textContent = '...';
     if (mobileNowPlayingTitle) {
@@ -432,7 +447,12 @@ function loadLesson(lessonId, title) {
         body: JSON.stringify({ lesson_id: parseInt(lessonId), csrf_token: csrfToken }),
         signal: currentLoadController.signal
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success && data.token) {
             // Update title
@@ -445,6 +465,8 @@ function loadLesson(lessonId, title) {
             updateMediaSession(title);
             
             const streamUrl = 'stream.php?token=' + data.token;
+            
+            // Set source and load
             audioPlayer.src = streamUrl;
             audioPlayer.load();
             
@@ -452,6 +474,7 @@ function loadLesson(lessonId, title) {
             audioPlayer.style.opacity = '1';
             audioPlayer.style.pointerEvents = 'auto';
             
+            // Auto-play
             audioPlayer.play().catch(e => console.log('Autoplay prevented'));
             
             // Scroll to player on mobile
