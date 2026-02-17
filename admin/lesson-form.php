@@ -79,13 +79,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 if (!$error) {
                     if ($id) {
-                        // Update
+                        // Update - do NOT change sort_order
                         $stmt = $db->prepare("
-                            UPDATE lessons SET title = ?, description = ?, course_id = ?, status = ?, sort_order = ?,
+                            UPDATE lessons SET title = ?, description = ?, course_id = ?, status = ?,
                                    start_datetime = ?, end_datetime = ?
                             WHERE id = ?
                         ");
-                        $stmt->execute([$title, $description, $selectedCourseId, $status, $sortOrder, $startDatetime, $endDatetime, $id]);
+                        $stmt->execute([$title, $description, $selectedCourseId, $status, $startDatetime, $endDatetime, $id]);
                         $lessonId = $id;
                         
                         Security::logActivity('lesson_updated', "Lesson updated: $title", null, $currentAdmin['id']);
@@ -167,6 +167,7 @@ include __DIR__ . '/includes/sidebar.php';
 								
 								<form method="POST" action="" enctype="multipart/form-data" id="lessonForm">
 									<?= csrf_field() ?>
+									<input type="hidden" name="sort_order" value="<?= intval($lesson['sort_order'] ?? 0) ?>">
 									
 									<div class="mb-3">
 										<label class="form-label" for="course_id">کۆرس *</label>
