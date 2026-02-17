@@ -90,12 +90,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         
                         Security::logActivity('lesson_updated', "Lesson updated: $title", null, $currentAdmin['id']);
                     } else {
-                        // Insert
+                        // Insert - auto set sort_order to end of list
+                        $stmt = $db->prepare("SELECT COALESCE(MAX(sort_order), 0) + 1 FROM lessons WHERE course_id = ?");
+                        $stmt->execute([$selectedCourseId]);
+                        $nextSortOrder = $stmt->fetchColumn();
+                        
                         $stmt = $db->prepare("
                             INSERT INTO lessons (title, description, course_id, status, sort_order, start_datetime, end_datetime)
                             VALUES (?, ?, ?, ?, ?, ?, ?)
                         ");
-                        $stmt->execute([$title, $description, $selectedCourseId, $status, $sortOrder, $startDatetime, $endDatetime]);
+                        $stmt->execute([$title, $description, $selectedCourseId, $status, $nextSortOrder, $startDatetime, $endDatetime]);
                         $lessonId = $db->lastInsertId();
                         
                         Security::logActivity('lesson_created', "Lesson created: $title", null, $currentAdmin['id']);
