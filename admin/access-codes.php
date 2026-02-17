@@ -53,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Get filter
 $statusFilter = $_GET['status'] ?? '';
 
-// Get access codes
-$codes = AccessCode::getAll($statusFilter ?: null);
+// Get access codes (no pagination - show all)
+$codes = AccessCode::getAll($statusFilter ?: null, 1, 999999);
 
 // Get stats
 $stats = AccessCode::getStats();
