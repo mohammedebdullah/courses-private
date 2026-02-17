@@ -341,6 +341,10 @@ audioPlayer.addEventListener('timeupdate', function() {
 
 // Audio error handler
 audioPlayer.addEventListener('error', function(e) {
+    // Don't show errors during intentional lesson loading
+    if (isLoadingLesson) {
+        return;
+    }
     console.error('Audio error:', e, audioPlayer.error);
     showToast('خەلەتی د لێدانا دەنگی دا', 'error');
 });
@@ -422,9 +426,9 @@ function loadLesson(lessonId, title) {
     
     currentLessonId = parseInt(lessonId);
     
-    // Stop and clear current audio immediately for faster response
+    // Stop current audio (don't clear source to avoid error event)
     audioPlayer.pause();
-    audioPlayer.src = '';
+    audioPlayer.currentTime = 0;
     
     // Update title with loading indicator
     nowPlayingTitle.textContent = '...';
