@@ -1,4 +1,8 @@
     </main>
+    <?php
+    $securityJsVersion = @filemtime(__DIR__ . '/../assets/js/security.js') ?: time();
+    $appJsVersion = @filemtime(__DIR__ . '/../assets/js/app.js') ?: time();
+    ?>
     
     <footer class="footer">
         <div class="container">
@@ -8,8 +12,8 @@
     </footer>
     
     <!-- Defer heavy scripts for faster page load -->
-    <script src="assets/js/security.js" defer></script>
-    <script src="assets/js/app.js" defer></script>
+    <script src="assets/js/security.js?v=<?= $securityJsVersion ?>" defer></script>
+    <script src="assets/js/app.js?v=<?= $appJsVersion ?>" defer></script>
     
     <script>
         // Generate anti-recording watermark (optimized - fewer elements)
