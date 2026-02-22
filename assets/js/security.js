@@ -183,7 +183,12 @@
         const audios = document.querySelectorAll('audio');
         audios.forEach(audio => {
             audio.disablePictureInPicture = true;
-            audio.controlsList = 'nodownload noplaybackrate';
+            audio.controlsList = 'nodownload';
+            audio.addEventListener('ratechange', function() {
+                if (audio.playbackRate > 1.5) {
+                    audio.playbackRate = 1.5;
+                }
+            });
         });
     });
     
