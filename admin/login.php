@@ -78,9 +78,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 					<div class="col-lg-5 mx-auto">
 						<div class="login-content user-login">
 							<div class="login-logo">
-								<img src="assets/img/logos/black.png" alt="img" width="200">
+								<img src="assets/img/logos/dark.png" alt="img" width="200">
 								<a href="index.php" class="login-logo logo-white">
-									<img src="assets/img/logos/black.png" alt="Img">
+									<img src="assets/img/logos/white.png" alt="Img">
 								</a>
 							</div>
 							<form action="" method="POST">
