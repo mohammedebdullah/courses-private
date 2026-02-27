@@ -23,7 +23,7 @@ class Session {
             if (PHP_VERSION_ID >= 70300) {
                 session_set_cookie_params([
                     'lifetime' => SESSION_LIFETIME, // 1 year - persist across browser restarts
-                    'path' => '/',
+                    'path' => '/private',  // Isolate session to course website subfolder
                     'domain' => '',
                     'secure' => $isSecure,
                     'httponly' => true,
@@ -32,7 +32,7 @@ class Session {
             } else {
                 session_set_cookie_params(
                     SESSION_LIFETIME, // lifetime
-                    '/',              // path
+                    '/private',       // path - Isolate session to course website subfolder
                     '',               // domain
                     $isSecure,        // secure
                     true              // httponly
