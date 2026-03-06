@@ -14,6 +14,9 @@ class Session {
             ini_set('session.use_only_cookies', 1);
             ini_set('session.use_strict_mode', 1);
             ini_set('session.gc_maxlifetime', SESSION_LIFETIME);
+            ini_set('session.gc_probability', 1);  // Enable garbage collection
+            ini_set('session.gc_divisor', 1000);   // Run 0.1% of the time (not every request)
+            ini_set('session.cookie_path', BASE_PATH); // Isolate cookie to course path only
             
             // Set cookie parameters before starting session (required for Safari)
             $isSecure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
@@ -23,7 +26,7 @@ class Session {
             if (PHP_VERSION_ID >= 70300) {
                 session_set_cookie_params([
                     'lifetime' => SESSION_LIFETIME, // 1 year - persist across browser restarts
-                    'path' => '/private',  // Isolate session to course website subfolder
+                    'path' => BASE_PATH,  // Isolate sessions to course website only (not shared with main site)
                     'domain' => '',
                     'secure' => $isSecure,
                     'httponly' => true,
@@ -32,7 +35,7 @@ class Session {
             } else {
                 session_set_cookie_params(
                     SESSION_LIFETIME, // lifetime
-                    '/private',       // path - Isolate session to course website subfolder
+                    BASE_PATH,        // path - Isolate sessions to course website only (not shared with main site)
                     '',               // domain
                     $isSecure,        // secure
                     true              // httponly

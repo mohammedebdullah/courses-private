@@ -167,17 +167,29 @@ class AccessCode {
     }
     
     /**
-     * Check and update expired codes
+     * Check and update expired codes (only unused codes)
      */
     public static function cleanExpired() {
         $db = getDB();
         
-        // Mark expired codes
+        // Mark expired codes (only if not yet used by anyone)
         $stmt = $db->prepare("
             UPDATE access_codes 
             SET status = 'expired' 
             WHERE valid_until <= NOW() 
             AND status = 'active'
+            AND user_id IS NULL
+        ");
+        $stmt->execute();
+        
+        // For used codes, just mark as 'used' instead of 'expired'
+        // This keeps users logged in even after code expiry date
+        $stmt = $db->prepare("
+            UPDATE access_codes 
+            SET status = 'used' 
+            WHERE valid_until <= NOW() 
+            AND status = 'active'
+            AND user_id IS NOT NULL
         ");
         $stmt->execute();
     }
@@ -217,14 +229,9 @@ class AccessCode {
         ");
         $stmt->execute([$validUntil, $codeId]);
         
-        // If there was an associated user, we can optionally deactivate them
-        if ($code['user_id']) {
-            $stmt = $db->prepare("UPDATE users SET status = 'expired' WHERE id = ?");
-            $stmt->execute([$code['user_id']]);
-            
-            // Invalidate their sessions
-            Session::invalidateUserSessions($code['user_id']);
-        }
+        // NOTE: We do NOT expire the user or invalidate their sessions
+        // Users should remain logged in even if their code is reactivated for reuse
+        // Only admin revoke() action should log out users
         
         Security::logActivity('code_reactivated', "Access code reactivated: {$code['code']}", null, $adminId);
         

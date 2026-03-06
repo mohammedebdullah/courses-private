@@ -29,6 +29,14 @@ define('SESSION_LIFETIME', 31536000); // 1 year in seconds
 define('ACCESS_CODE_LIFETIME', 720 * 3600); // 30 days in seconds
 define('AUDIO_TOKEN_LIFETIME', 300); // 5 minutes
 
+// Web path settings (IMPORTANT: Change this to match your URL structure)
+// Examples:
+//   - If course is at: https://yourdomain.com/audio-course  → use '/audio-course'
+//   - If course is at: https://yourdomain.com/private       → use '/private'
+//   - If course is at: https://course.yourdomain.com/       → use '/'
+//   - If course is at root: https://yourdomain.com/         → use '/'
+define('BASE_PATH', '/private'); // For localhost testing - Change to '/private' when deploying!
+
 // Path settings
 define('UPLOAD_PATH', APP_ROOT . '/uploads/');
 define('AUDIO_PATH', APP_ROOT . '/uploads/audio/');

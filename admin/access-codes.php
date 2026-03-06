@@ -42,12 +42,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $extendHours = intval($_POST['extend_hours'] ?? 0);
             if ($codeId) {
                 if (AccessCode::reactivate($codeId, $currentAdmin['id'], $extendHours ?: null)) {
-                    $message = 'کۆدێ دەستپێگەهشتنێ هاتە چالاککردنەوە. بەکارهێنەر هاتە دەرخستن و کۆد ئێستا بەردەستە بۆ بەکارهێنانا دووبارە.';
+                    $message = 'کۆد ب سەرکەفتیانە هاتە چالاکرن. بەکارهێنەر هاتە دەرخستن و کۆد ئامادەیە بۆ بکارئینانا دووبارە.';
                 } else {
-                    $error = 'هەڵەیەک ڕوویدا لە کاتی چالاککردنەوەی کۆد.';
+                    $error = 'هەڵەیەک چێبوو د دەمێ چالاکرنا کۆدیدا.';
                 }
             }
-        }    }
+        }
+        
+        if ($action === 'reactivate_all') {
+            $status = $_POST['reactivate_status'] ?? 'used';
+            $extendHours = intval($_POST['bulk_extend_hours'] ?? 0);
+            
+            // Get all codes with the specified status
+            $stmt = $db->prepare("SELECT id FROM access_codes WHERE status = ?");
+            $stmt->execute([$status]);
+            $codesToReactivate = $stmt->fetchAll();
+            
+            $successCount = 0;
+            foreach ($codesToReactivate as $code) {
+                if (AccessCode::reactivate($code['id'], $currentAdmin['id'], $extendHours ?: null)) {
+                    $successCount++;
+                }
+            }
+            
+            if ($successCount > 0) {
+                $message = "$successCount کۆد ب سەرکەفتیانە هاتنە چالاکرن.";
+            } else {
+                $error = 'چ کۆد نەهاتنە چالاکرن.';
+            }
+        }
+    }
 }
 
 // Get filter
@@ -189,13 +213,18 @@ include __DIR__ . '/includes/sidebar.php';
 						<div class="card">
 							<div class="card-header border-bottom-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
 								<h5 class="card-title">کۆدێن دەستپێگەهشتنێ</h5>
-								<select class="form-control form-select" style="width: 150px;" onchange="window.location.href='access-codes.php' + (this.value ? '?status=' + this.value : '')">
-									<option value="">هەمی ڕەوش</option>
-									<option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>بەردەست</option>
-									<option value="used" <?= $statusFilter === 'used' ? 'selected' : '' ?>>بکارئینای</option>
+								<div class="d-flex gap-2 align-items-center flex-wrap">
+									<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reactivateAllModal">
+										<i class="ti ti-refresh me-1"></i>چالاکرنا هەمیان
+									</button>
+									<select class="form-control form-select" style="width: 150px;" onchange="window.location.href='access-codes.php' + (this.value ? '?status=' + this.value : '')">
+										<option value="">هەمی ڕەوش</option>
+										<option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>بەردەست</option>
+										<option value="used" <?= $statusFilter === 'used' ? 'selected' : '' ?>>بکارئینای</option>
 
-									<option value="revoked" <?= $statusFilter === 'revoked' ? 'selected' : '' ?>>هەلوەشاندی</option>
-								</select>
+										<option value="revoked" <?= $statusFilter === 'revoked' ? 'selected' : '' ?>>هەلوەشاندی</option>
+									</select>
+								</div>
 							</div>
 							<div class="card-body">
 								<?php if (empty($codes)): ?>
@@ -305,6 +334,42 @@ include __DIR__ . '/includes/sidebar.php';
 	</div>
 	<?php endif; ?>
 <?php endforeach; ?>
+
+<!-- Bulk Reactivate All Modal -->
+<div class="modal fade" id="reactivateAllModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">چالاکرنا هەمی کۆدان دووبارە</h5>
+			</div>
+			<form method="POST">
+				<?= csrf_field() ?>
+				<input type="hidden" name="action" value="reactivate_all">
+				<div class="modal-body">
+					<p class="mb-3">تە دڤێت هەمی کۆدێن ل خوارێ دیارکری چالاک بکەیڤە؟</p>
+					
+					<div class="mb-3">
+						<label class="form-label">کیژ کۆدان تە دڤێت چالاک بکەیڤە:</label>
+						<select name="reactivate_status" class="form-select" required>
+							<option value="used">تنێ کۆدێن بکارئینای (<?= $stats['used'] ?? 0 ?>)</option>
+							<option value="expired">تنێ کۆدێن ب سەرڤەچووی (<?= $stats['expired'] ?? 0 ?>)</option>
+							<option value="revoked">تنێ کۆدێن هەلوەشاندی</option>
+						</select>
+					</div>
+					
+					<div class="alert alert-warning">
+						<i class="ti ti-alert-triangle me-2"></i>
+						<strong>ئاگەهداری:</strong> هەمی ئەو بەکارهێنەرێن ب ڤان کۆدان هاتینە ژوور دێ هێنە دەرخستن و کۆد دێ ئامادەبن بۆ بکارئینانا دووبارە.
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لێڤەبوون</button>
+					<button type="submit" class="btn btn-success"><i class="ti ti-refresh me-1"></i>چالاکرنا هەمیان</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
 
 <script>
 function copyAllCodes() {
